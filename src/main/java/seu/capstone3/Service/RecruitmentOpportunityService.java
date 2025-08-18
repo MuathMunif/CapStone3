@@ -3,6 +3,7 @@ package seu.capstone3.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
+import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.RecruitmentOpportunity;
 import seu.capstone3.Repository.ClubRepository;
@@ -23,11 +24,22 @@ public class RecruitmentOpportunityService {
     }
 
 
-    public void addRecruitmentOpportunity (Integer club_id , RecruitmentOpportunity recruitmentOpportunity) {
-        Club club = clubRepository.findClubById(club_id);
+//    //todo create DTO
+//    public void addRecruitmentOpportunity (Integer club_id , RecruitmentOpportunity recruitmentOpportunity) {
+//        Club club = clubRepository.findClubById(club_id);
+//        if (club == null) {
+//            throw new ApiException("Club not found");
+//        }
+//        recruitmentOpportunity.setClub(club);
+//        recruitmentOpportunityRepository.save(recruitmentOpportunity);
+//    }
+
+    public void addRecruitmentOpportunity(RecruitmentOpportunityDTO recruitmentOpportunityDTO) {
+        Club club = clubRepository.findClubById(recruitmentOpportunityDTO.getClub_id());
         if (club == null) {
             throw new ApiException("Club not found");
         }
+        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTO.getDescription() , club ,null);
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
 

@@ -3,7 +3,10 @@ package seu.capstone3.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
+import seu.capstone3.DTOIN.PlayerDTO;
+import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Player;
+import seu.capstone3.Repository.CategoryRepository;
 import seu.capstone3.Repository.PlayerRepository;
 
 import java.util.List;
@@ -13,13 +16,19 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+    private final CategoryRepository categoryRepository;
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
     }
 
 
-    public void addPlayer(Player player) {
+    public void addPlayer(PlayerDTO playerDTO) {
+        Category category = categoryRepository.findCategoryById(playerDTO.getCategory_id());
+        if(category == null) {
+            throw new ApiException("Category not found");
+        }
+        Player player = new Player(null,playerDTO.getName(),playerDTO.getEmail(),playerDTO.getPhoneNumber(),playerDTO.getAge(),playerDTO.getLocation(),playerDTO.getHeight(),playerDTO.getWeight(),playerDTO.getDescription(),playerDTO.getSkills(),null,null,category,null);
         playerRepository.save(player);
     }
 

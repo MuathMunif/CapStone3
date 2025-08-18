@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
+import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
 import seu.capstone3.Model.RecruitmentOpportunity;
 import seu.capstone3.Service.RecruitmentOpportunityService;
 
@@ -21,9 +22,9 @@ public class RecruitmentOpportunityController {
     }
 
 
-    @PostMapping("/add/{club_id}")
-    public ResponseEntity<?> addRecruitmentOpportunity(@PathVariable Integer club_id , @Valid @RequestBody RecruitmentOpportunity recruitmentOpportunity) {
-        recruitmentOpportunityService.addRecruitmentOpportunity(club_id, recruitmentOpportunity);
+    @PostMapping("/add")
+    public ResponseEntity<?> addRecruitmentOpportunity( @Valid @RequestBody RecruitmentOpportunityDTO recruitmentOpportunityDTO) {
+        recruitmentOpportunityService.addRecruitmentOpportunity(recruitmentOpportunityDTO);
         return ResponseEntity.status(200).body(new ApiResponse("Successfully added recruitment opportunity"));
     }
 

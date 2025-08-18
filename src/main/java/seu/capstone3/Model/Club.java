@@ -28,6 +28,7 @@ public class Club {
 
     @NotEmpty(message = "The name must be not empty")
     @Column(columnDefinition = "varchar(10) not null")
+    //todo increase the name later
     private String name;
 
     @Email(message = "The email must be valid email")

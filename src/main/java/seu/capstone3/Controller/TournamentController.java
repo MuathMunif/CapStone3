@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
+import seu.capstone3.DTOIN.TournamentDTO;
 import seu.capstone3.Model.Tournament;
 import seu.capstone3.Service.TournamentService;
 
@@ -20,9 +21,9 @@ public class TournamentController {
     }
 
 
-    @PostMapping("/add/{sponsor_id}")
-    public ResponseEntity<?> addTournament(@PathVariable Integer sponsor_id , @Valid @RequestBody Tournament tournament){
-        tournamentService.addTournament(sponsor_id,tournament);
+    @PostMapping("/add")
+    public ResponseEntity<?> addTournament(@Valid @RequestBody TournamentDTO tournamentDTO){
+        tournamentService.addTournament(tournamentDTO);
         return ResponseEntity.status(200).body(new ApiResponse("Tournament added successfully"));
     }
 
