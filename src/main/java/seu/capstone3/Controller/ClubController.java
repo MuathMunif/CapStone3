@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
+import seu.capstone3.DTOIN.ClubDTO;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Service.ClubService;
 
@@ -20,8 +21,8 @@ public class ClubController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addClub(@Valid @RequestBody Club club) {
-        clubService.addClub(club);
+    public ResponseEntity<?> addClub(@Valid @RequestBody ClubDTO clubDTO) {
+        clubService.addClub(clubDTO);
         return ResponseEntity.status(200).body(new ApiResponse("Club added successfully"));
     }
 

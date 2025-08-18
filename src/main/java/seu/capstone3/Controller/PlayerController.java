@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
+import seu.capstone3.DTOIN.PlayerDTO;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Service.PlayerService;
 
@@ -21,8 +22,8 @@ public class PlayerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addPlayer(@Valid @RequestBody Player player) {
-        playerService.addPlayer(player);
+    public ResponseEntity<?> addPlayer(@Valid @RequestBody PlayerDTO playerDTO) {
+        playerService.addPlayer(playerDTO);
         return ResponseEntity.status(200).body(new ApiResponse("Player added successfully"));
     }
 

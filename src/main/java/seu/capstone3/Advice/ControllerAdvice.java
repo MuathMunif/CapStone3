@@ -12,6 +12,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.Api.ApiResponse;
 
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Objects;
 
@@ -77,6 +78,13 @@ public class ControllerAdvice {
     // TypesMisMatch Exception
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse> MethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String msg = e.getMessage();
+        return ResponseEntity.status(400).body(new ApiResponse(msg));
+    }
+
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> NullPointerException(NullPointerException e) {
         String msg = e.getMessage();
         return ResponseEntity.status(400).body(new ApiResponse(msg));
     }

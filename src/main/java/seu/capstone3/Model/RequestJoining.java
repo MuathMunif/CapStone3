@@ -30,6 +30,7 @@ public class RequestJoining {
     private Player player;
 
     @ManyToOne
+    @JsonIgnore
     private RecruitmentOpportunity recruitmentOpportunity;
 
 

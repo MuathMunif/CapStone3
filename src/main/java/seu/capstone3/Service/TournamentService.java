@@ -3,8 +3,11 @@ package seu.capstone3.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
+import seu.capstone3.DTOIN.TournamentDTO;
+import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Sponsor;
 import seu.capstone3.Model.Tournament;
+import seu.capstone3.Repository.CategoryRepository;
 import seu.capstone3.Repository.SponsorRepository;
 import seu.capstone3.Repository.TournamentRepository;
 
@@ -16,17 +19,30 @@ import java.util.Objects;
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final SponsorRepository sponsorRepository;
+    private final CategoryRepository categoryRepository;
 
 
     public List<Tournament> getAllTournaments(){
         return tournamentRepository.findAll();
     }
 
-    public void addTournament(Integer sponsorId ,Tournament tournament){
-        Sponsor sponsor = sponsorRepository.findSponsorById(sponsorId);
-        if (sponsor == null) {
-            throw new ApiException("You are not allowed to create a tournament");
+//    public void addTournament(Integer sponsorId ,Tournament tournament){
+//        Sponsor sponsor = sponsorRepository.findSponsorById(sponsorId);
+//        if (sponsor == null) {
+//            throw new ApiException("You are not allowed to create a tournament");
+//        }
+//        tournament.setSponsor(sponsor);
+//        tournamentRepository.save(tournament);
+//    }
+
+
+    public void addTournament(TournamentDTO tournamentDTO){
+        Sponsor sponsor = sponsorRepository.findSponsorById(tournamentDTO.getSponsor_id());
+        Category category = categoryRepository.findCategoryById(tournamentDTO.getCategory_id());
+        if(sponsor == null || category == null){
+            throw new ApiException("Sponsor not found or Category not found");
         }
+        Tournament tournament = new Tournament(null ,tournamentDTO.getName(),tournamentDTO.getDescription(),tournamentDTO.getNumberOfPlayers(),tournamentDTO.getStartDate(),tournamentDTO.getEndDate(),tournamentDTO.getLocation(),sponsor,category,null);
         tournamentRepository.save(tournament);
     }
 
