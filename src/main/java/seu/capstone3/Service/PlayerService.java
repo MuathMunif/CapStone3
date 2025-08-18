@@ -1,0 +1,51 @@
+package seu.capstone3.Service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import seu.capstone3.Api.ApiException;
+import seu.capstone3.Model.Player;
+import seu.capstone3.Repository.PlayerRepository;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PlayerService {
+
+    private final PlayerRepository playerRepository;
+
+    public List<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
+
+
+    public void addPlayer(Player player) {
+        playerRepository.save(player);
+    }
+
+    public void updatePlayer(Integer id ,Player player) {
+        Player player1 = playerRepository.findPlayerById(id);
+        if (player1 == null) {
+            throw new ApiException("Player not found");
+        }
+        player1.setName(player.getName());
+        player1.setAge(player.getAge());
+        player1.setEmail(player.getEmail());
+        player1.setPhoneNumber(player.getPhoneNumber());
+        player1.setLocation(player.getLocation());
+        player1.setHeight(player.getHeight());
+        player1.setWeight(player.getWeight());
+        player1.setDescription(player.getDescription());
+        player1.setSkills(player.getSkills());
+        playerRepository.save(player1);
+    }
+
+
+    public void deletePlayer(Integer id) {
+        Player player = playerRepository.findPlayerById(id);
+        if (player == null) {
+            throw new ApiException("Player not found");
+        }
+        playerRepository.delete(player);
+    }
+}
