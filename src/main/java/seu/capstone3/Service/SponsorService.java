@@ -21,6 +21,10 @@ public class SponsorService {
 
 
     public void addSponsor(Sponsor sponsor) {
+        Sponsor existingSponsor = sponsorRepository.findSponsorByEmail(sponsor.getEmail());
+        if (existingSponsor != null) {
+            throw new ApiException("Sponsor with this email "+sponsor.getEmail()+" already exist");
+        }
         sponsorRepository.save(sponsor);
     }
 

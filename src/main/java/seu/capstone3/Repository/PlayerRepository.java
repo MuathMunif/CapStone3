@@ -6,4 +6,6 @@ import seu.capstone3.Model.Player;
 public interface PlayerRepository extends JpaRepository<Player, Integer> {
 
     Player findPlayerById(Integer id);
+
+    Player findPlayerByEmail(String email);
 }

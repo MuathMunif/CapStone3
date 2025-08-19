@@ -6,5 +6,8 @@ import seu.capstone3.Model.Club;
 
 @Repository
 public interface ClubRepository  extends JpaRepository<Club, Integer> {
+
     Club findClubById(Integer id);
+
+    Club findClubByEmail(String email);
 }

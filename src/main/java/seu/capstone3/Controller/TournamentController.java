@@ -1,5 +1,6 @@
 package seu.capstone3.Controller;
 
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -67,5 +68,16 @@ public class TournamentController {
     @GetMapping("/{tournamentId}/teams")
     public Set<Team> getTeams(@PathVariable Integer tournamentId) {
         return tournamentService.getTeamsInTournament(tournamentId);
+    }
+
+    @PostMapping("/{tournamentId}/close")
+    public ResponseEntity<?> closeTournament(@PathVariable Integer tournamentId){
+        tournamentService.closeTournament(tournamentId);
+        return ResponseEntity.status(200).body(new ApiResponse("Tournament Closed"));
+    }
+
+    @GetMapping("/get-player-tournament/{email}")
+    public ResponseEntity<?> getPlayerTournament(@PathVariable String email){
+        return ResponseEntity.status(200).body(tournamentService.getPlayerTournament(email));
     }
 }

@@ -20,6 +20,11 @@ public class CategoryService {
 
 
     public void addCategory(Category category) {
+
+        Category existingCategory = categoryRepository.findCategoriesByName(category.getName());
+        if (existingCategory != null) {
+            throw new ApiException("Category already exist");
+        }
         categoryRepository.save(category);
     }
 

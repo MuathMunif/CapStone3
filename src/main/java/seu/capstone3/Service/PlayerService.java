@@ -28,7 +28,28 @@ public class PlayerService {
         if(category == null) {
             throw new ApiException("Category not found");
         }
-        Player player = new Player(null,playerDTO.getName(),playerDTO.getEmail(),playerDTO.getPhoneNumber(),playerDTO.getAge(),playerDTO.getLocation(),playerDTO.getHeight(),playerDTO.getWeight(),playerDTO.getDescription(),playerDTO.getSkills(),null,null,category,null,null);
+
+        Player existingPlayer = playerRepository.findPlayerByEmail(playerDTO.getEmail());
+        if (existingPlayer != null) {
+            throw new ApiException("Player with this email: "+playerDTO.getEmail()+" already exists");
+        }
+
+        Player player = new Player(null,
+                playerDTO.getName(),
+                playerDTO.getEmail(),
+                playerDTO.getPhoneNumber(),
+                playerDTO.getAge(),
+                playerDTO.getLocation(),
+                playerDTO.getHeight(),
+                playerDTO.getWeight(),
+                playerDTO.getDescription(),
+                playerDTO.getSkills(),
+                null,
+                null,
+                category,
+                null,
+                null);
+
         playerRepository.save(player);
     }
 
