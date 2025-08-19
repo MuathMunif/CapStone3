@@ -5,9 +5,14 @@ import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
 import seu.capstone3.Model.Club;
+import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
+import seu.capstone3.Model.RequestJoining;
 import seu.capstone3.Repository.ClubRepository;
+import seu.capstone3.Repository.PlayerRepository;
 import seu.capstone3.Repository.RecruitmentOpportunityRepository;
+import seu.capstone3.Repository.RequestJoiningRepository;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +21,8 @@ import java.util.Objects;
 public class RecruitmentOpportunityService {
     private final RecruitmentOpportunityRepository recruitmentOpportunityRepository;
     private final ClubRepository clubRepository;
+    private final RequestJoiningRepository requestJoiningRepository;
+    private final PlayerRepository playerRepository;
 
 
     public List<RecruitmentOpportunity> getAllRecruitmentOpportunities() {
@@ -38,7 +45,8 @@ public class RecruitmentOpportunityService {
         if (club == null) {
             throw new ApiException("Club not found");
         }
-        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTO.getDescription() , club ,null);
+        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTO.getDescription() ,"OPEN", club ,null);
+        recruitmentOpportunity.setStatus("OPEN");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
 
@@ -68,4 +76,56 @@ public class RecruitmentOpportunityService {
         }
         recruitmentOpportunityRepository.delete(recruitmentOpportunity);
     }
+
+    public void acceptPlayer(Integer recruitmentOpportunity_id, Integer requestJoining_id) {
+        RecruitmentOpportunity recruitmentOpportunity = recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(recruitmentOpportunity_id);
+        RequestJoining requestJoining = requestJoiningRepository.findRequestJoiningById(requestJoining_id);
+
+        if (recruitmentOpportunity == null) {
+            throw new ApiException("Recruitment Opportunity not found");
+        }
+        if (requestJoining == null) {
+            throw new ApiException("RequestJoining not found");
+        }
+        Club club = clubRepository.findClubById(recruitmentOpportunity.getClub().getId());
+        Player player = playerRepository.findPlayerById(requestJoining.getPlayer().getId());
+
+        requestJoining.setStatus("ACCEPTED");
+        club.getPlayers().add(player);
+        player.setClub(club);
+        clubRepository.save(club);
+        playerRepository.save(player);
+        requestJoiningRepository.save(requestJoining);
+    }
+
+
+    //reject player
+    public void rejectPlayer(Integer recruitmentOpportunity_id, Integer requestJoining_id) {
+        RequestJoining requestJoining = requestJoiningRepository.findRequestJoiningById(requestJoining_id);
+        RecruitmentOpportunity recruitmentOpportunity = recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(recruitmentOpportunity_id);
+        if (recruitmentOpportunity == null || requestJoining == null) {
+            throw new ApiException("Recruitment Opportunity or request Joining not found");
+        }
+        requestJoining.setStatus("REJECTED");
+        requestJoiningRepository.save(requestJoining);
+    }
+
+
+    public void closeRecruitmentOpportunity(Integer club_id , Integer recruitmentOpportunity_id) {
+        Club club = clubRepository.findClubById(club_id);
+        RecruitmentOpportunity recruitmentOpportunity = recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(recruitmentOpportunity_id);
+        if (club == null || recruitmentOpportunity == null) {
+            throw new ApiException("Club or recruitment Opportunity not found");
+        }
+        if (!Objects.equals(club.getId(), recruitmentOpportunity.getClub().getId())) {
+            throw new ApiException("You are not allowed to close this recruitment opportunity");
+        }
+        if (recruitmentOpportunity.getStatus().equals("CLOSED")) {
+            throw new ApiException("Recruitment Opportunity is already closed");
+        }
+
+        recruitmentOpportunity.setStatus("CLOSED");
+        recruitmentOpportunityRepository.save(recruitmentOpportunity);
+    }
+
 }

@@ -66,4 +66,14 @@ public class ClubService {
         }
         clubRepository.delete(club);
     }
+
+    //EX
+
+    public Club getClubById(Integer id){
+        Club club = clubRepository.findClubById(id);
+        if(club == null){
+            throw new ApiException("Club not found");
+        }
+        return club;
+    }
 }

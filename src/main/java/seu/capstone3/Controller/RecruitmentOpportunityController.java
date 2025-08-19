@@ -41,4 +41,25 @@ public class RecruitmentOpportunityController {
         recruitmentOpportunityService.deleteRecruitmentOpportunity(club_id, id);
         return ResponseEntity.status(200).body(new ApiResponse("Successfully deleted"));
     }
+
+
+    @PutMapping("/accept-player-to-club/{recruitmentOpportunity_id}/{requestJoining_id}")
+    public ResponseEntity<?> acceptPlayer(@PathVariable Integer recruitmentOpportunity_id, @PathVariable Integer requestJoining_id) {
+        recruitmentOpportunityService.acceptPlayer(recruitmentOpportunity_id, requestJoining_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Player accepted successfully"));
+    }
+
+    @PutMapping("/reject-player/{recruitmentOpportunity_id}/{requestJoining_id}")
+    public ResponseEntity<?> rejectPlayer(@PathVariable Integer recruitmentOpportunity_id, @PathVariable Integer requestJoining_id) {
+        recruitmentOpportunityService.rejectPlayer(recruitmentOpportunity_id, requestJoining_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Player rejected successfully"));
+    }
+
+
+    @PutMapping("/close-recruitment-opportunity/{club_id}/{recruitmentOpportunity_id}")
+    public ResponseEntity<?> closeRecruitmentOpportunity(@PathVariable Integer club_id, @PathVariable Integer recruitmentOpportunity_id) {
+        recruitmentOpportunityService.closeRecruitmentOpportunity(club_id, recruitmentOpportunity_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Recruitment opportunity closed"));
+    }
+
 }

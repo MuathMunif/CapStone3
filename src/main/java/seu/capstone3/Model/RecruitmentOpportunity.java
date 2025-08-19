@@ -3,6 +3,7 @@ package seu.capstone3.Model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,9 @@ public class RecruitmentOpportunity {
     @NotEmpty(message = "The description must be not empty")
     @Column(columnDefinition = "varchar(500) not null")
     private String description;
+
+    @Pattern(regexp = "^(OPEN|CLOSE)$", message = "The status must be either OPEN or CLOSE")
+    private String status;
 
     @ManyToOne
     private Club club;
