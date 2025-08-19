@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 @RestController
 @RequestMapping("/api/v1/sponsor")
 @RequiredArgsConstructor
-public class SponsorController {
+public class  SponsorController {
     private final SponsorService sponsorService;
 
     @GetMapping("/get")
