@@ -76,4 +76,8 @@ public class Player {
     @ManyToMany
     @JsonIgnore
     private Set<Tournament> tournaments;
+
+    @ManyToOne
+    @JsonIgnore
+    private Team team;
 }

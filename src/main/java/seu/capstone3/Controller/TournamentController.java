@@ -1,16 +1,20 @@
 package seu.capstone3.Controller;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
 import seu.capstone3.DTOIN.TournamentDTO;
+import seu.capstone3.Model.Team;
 import seu.capstone3.Model.Tournament;
 import seu.capstone3.Service.TournamentService;
 
+import java.util.Set;
+
 @RestController
-@RequestMapping("/api/v1/tournament")
+    @RequestMapping("/api/v1/tournament")
 @RequiredArgsConstructor
 public class TournamentController {
     private final TournamentService tournamentService;
@@ -45,5 +49,23 @@ public class TournamentController {
     public ResponseEntity<?> assignPlayerToTournament(@PathVariable Integer tournamentId , @PathVariable Integer playerId){
         tournamentService.assignPlayerToTournament(tournamentId, playerId);
         return ResponseEntity.status(200).body(new ApiResponse("Tournament assigned successfully"));
+    }
+
+    @GetMapping("/get-players-in-tournament/{tournamentId}")
+    public ResponseEntity<?> getPlayersInTournament(@PathVariable Integer tournamentId){
+        return ResponseEntity.status(200).body(tournamentService.getPlayersInTournament(tournamentId));
+    }
+
+
+    @PostMapping("/{tournamentId}/determine-teams")
+    public String drawTeams(@PathVariable Integer tournamentId) {
+        tournamentService.determineTeamsRandomly(tournamentId);
+        return "Teams have been drawn successfully!";
+    }
+
+
+    @GetMapping("/{tournamentId}/teams")
+    public Set<Team> getTeams(@PathVariable Integer tournamentId) {
+        return tournamentService.getTeamsInTournament(tournamentId);
     }
 }
