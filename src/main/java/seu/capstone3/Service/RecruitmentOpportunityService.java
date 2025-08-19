@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
+import seu.capstone3.DTOOUT.SimpleRecommendationResponse;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
@@ -13,8 +14,10 @@ import seu.capstone3.Repository.PlayerRepository;
 import seu.capstone3.Repository.RecruitmentOpportunityRepository;
 import seu.capstone3.Repository.RequestJoiningRepository;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class RecruitmentOpportunityService {
     private final ClubRepository clubRepository;
     private final RequestJoiningRepository requestJoiningRepository;
     private final PlayerRepository playerRepository;
+    private final AiScoutingService aiScoutingService;
 
 
     public List<RecruitmentOpportunity> getAllRecruitmentOpportunities() {
@@ -127,5 +131,31 @@ public class RecruitmentOpportunityService {
         recruitmentOpportunity.setStatus("CLOSED");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
+    public SimpleRecommendationResponse getAiRecommendations(Integer opportunityId) {
+        RecruitmentOpportunity opp =
+                recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(opportunityId);
 
+        if (opp == null) throw new RuntimeException("Recruitment Opportunity not found");
+
+        List<RequestJoining> pendings =
+                requestJoiningRepository.findAllByRecruitmentOpportunity_IdAndStatusIgnoreCase(
+                        opportunityId, "PENDING");
+
+        if (pendings == null || pendings.isEmpty()) {
+            return new SimpleRecommendationResponse(
+                    "No applicants yet.",
+                    List.of(),
+                    List.of(),
+                    0
+            );
+        }
+
+        // Always evaluate ALL applicants; category is handled in the prompt (mismatch gets lower score).
+        List<Player> candidates = pendings.stream()
+                .map(RequestJoining::getPlayer)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        return aiScoutingService.recommend(opp, candidates);
+    }
 }
