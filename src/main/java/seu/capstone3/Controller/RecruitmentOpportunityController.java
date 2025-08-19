@@ -62,4 +62,10 @@ public class RecruitmentOpportunityController {
         return ResponseEntity.status(200).body(new ApiResponse("Recruitment opportunity closed"));
     }
 
+    @PostMapping("/ai-recommendations/{opportunityId}")
+    public ResponseEntity<?> recommend(@PathVariable Integer opportunityId) {
+        return ResponseEntity.ok(recruitmentOpportunityService.getAiRecommendations(opportunityId));
+    }
+
+
 }
