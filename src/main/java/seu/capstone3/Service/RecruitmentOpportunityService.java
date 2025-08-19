@@ -27,6 +27,7 @@ public class RecruitmentOpportunityService {
     private final RequestJoiningRepository requestJoiningRepository;
     private final PlayerRepository playerRepository;
     private final AiScoutingService aiScoutingService;
+    private final EmailService emailService;
 
 
     public List<RecruitmentOpportunity> getAllRecruitmentOpportunities() {
@@ -94,6 +95,7 @@ public class RecruitmentOpportunityService {
         Club club = clubRepository.findClubById(recruitmentOpportunity.getClub().getId());
         Player player = playerRepository.findPlayerById(requestJoining.getPlayer().getId());
 
+        emailService.sendAcceptedEmail(player, club,recruitmentOpportunity);
         requestJoining.setStatus("ACCEPTED");
         club.getPlayers().add(player);
         player.setClub(club);
