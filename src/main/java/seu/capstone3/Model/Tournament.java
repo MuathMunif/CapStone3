@@ -53,8 +53,15 @@ public class Tournament {
     @ManyToOne
     private Category category;
 
+    @NotNull(message = "The number of teams must not be empty")
+    @Positive(message = "The number of teams must be a valid number")
+    private Integer numberOfTeams;
+
     @ManyToMany //todo check if the player can joining direct to tournament
     private Set<Player> players;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
+    private Set<Team> teams;
 
 
     private Integer playerCounter = 0;

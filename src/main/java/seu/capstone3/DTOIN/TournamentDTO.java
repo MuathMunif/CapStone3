@@ -38,5 +38,10 @@ public class TournamentDTO {
     @NotNull(message = "The sponsor_id must be not null")
     private Integer sponsor_id;
 
+    @NotNull(message = "The number of teams must not be empty")
+    @Positive(message = "The number of teams must be a valid number")
+    private Integer numberOfTeams;
+
+
 
 }
