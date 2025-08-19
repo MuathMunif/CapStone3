@@ -8,7 +8,6 @@ import seu.capstone3.Model.Club;
 import seu.capstone3.Model.RecruitmentOpportunity;
 import seu.capstone3.Repository.ClubRepository;
 import seu.capstone3.Repository.RecruitmentOpportunityRepository;
-
 import java.util.List;
 import java.util.Objects;
 

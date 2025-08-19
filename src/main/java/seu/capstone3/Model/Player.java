@@ -25,7 +25,7 @@ public class Player {
     private Integer id;
 
     @NotEmpty(message = "The name must be not empty")
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(50) not null")
     private String name;
 
     @Email(message = "The email must be a valid email")

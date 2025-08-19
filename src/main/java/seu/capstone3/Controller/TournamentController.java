@@ -38,4 +38,12 @@ public class TournamentController {
         tournamentService.deleteTournament(sponsor_id,tournament_id);
         return ResponseEntity.status(200).body(new ApiResponse("Tournament deleted successfully"));
     }
+
+    //EX
+
+    @PutMapping("/assign-player-to-tournament/{tournamentId}/{playerId}")
+    public ResponseEntity<?> assignPlayerToTournament(@PathVariable Integer tournamentId , @PathVariable Integer playerId){
+        tournamentService.assignPlayerToTournament(tournamentId, playerId);
+        return ResponseEntity.status(200).body(new ApiResponse("Tournament assigned successfully"));
+    }
 }

@@ -56,4 +56,7 @@ public class Tournament {
     @ManyToMany //todo check if the player can joining direct to tournament
     private Set<Player> players;
 
+
+    private Integer playerCounter = 0;
+
 }
