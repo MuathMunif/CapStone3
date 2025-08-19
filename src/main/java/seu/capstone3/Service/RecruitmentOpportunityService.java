@@ -45,7 +45,8 @@ public class RecruitmentOpportunityService {
         if (club == null) {
             throw new ApiException("Club not found");
         }
-        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTO.getDescription() , club ,null);
+        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTO.getDescription() ,"OPEN", club ,null);
+        recruitmentOpportunity.setStatus("OPEN");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
 
@@ -108,4 +109,23 @@ public class RecruitmentOpportunityService {
         requestJoining.setStatus("REJECTED");
         requestJoiningRepository.save(requestJoining);
     }
+
+
+    public void closeRecruitmentOpportunity(Integer club_id , Integer recruitmentOpportunity_id) {
+        Club club = clubRepository.findClubById(club_id);
+        RecruitmentOpportunity recruitmentOpportunity = recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(recruitmentOpportunity_id);
+        if (club == null || recruitmentOpportunity == null) {
+            throw new ApiException("Club or recruitment Opportunity not found");
+        }
+        if (!Objects.equals(club.getId(), recruitmentOpportunity.getClub().getId())) {
+            throw new ApiException("You are not allowed to close this recruitment opportunity");
+        }
+        if (recruitmentOpportunity.getStatus().equals("CLOSED")) {
+            throw new ApiException("Recruitment Opportunity is already closed");
+        }
+
+        recruitmentOpportunity.setStatus("CLOSED");
+        recruitmentOpportunityRepository.save(recruitmentOpportunity);
+    }
+
 }

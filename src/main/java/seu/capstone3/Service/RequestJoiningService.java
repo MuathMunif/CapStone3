@@ -36,6 +36,9 @@ public class RequestJoiningService {
         if(player == null || recruitmentOpportunity == null){
             throw new ApiException("Player or recruitmentOpportunity not found");
         }
+        if (!recruitmentOpportunity.getStatus().equals("OPEN")){
+            throw new ApiException("RecruitmentOpportunity is CLOSED");
+        }
         Club club = clubRepository.findClubById(recruitmentOpportunity.getClub().getId());
         if (!player.getCategory().equals(club.getCategory())){
             throw new ApiException("Player category does not match club category");

@@ -55,4 +55,11 @@ public class RecruitmentOpportunityController {
         return ResponseEntity.status(200).body(new ApiResponse("Player rejected successfully"));
     }
 
+
+    @PutMapping("/close-recruitment-opportunity/{club_id}/{recruitmentOpportunity_id}")
+    public ResponseEntity<?> closeRecruitmentOpportunity(@PathVariable Integer club_id, @PathVariable Integer recruitmentOpportunity_id) {
+        recruitmentOpportunityService.closeRecruitmentOpportunity(club_id, recruitmentOpportunity_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Recruitment opportunity closed"));
+    }
+
 }
