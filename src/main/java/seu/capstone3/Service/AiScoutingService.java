@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatOptions;
 
-import seu.capstone3.DTOOUT.PlayerPick;
-import seu.capstone3.DTOOUT.SimpleRecommendationResponse;
+import seu.capstone3.DTOOUT.PlayerPickDTO;
+import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
 
@@ -45,9 +45,9 @@ public class AiScoutingService {
     }
 
     /** Always return players if there are applicants. Keep it simple but informative. */
-    public SimpleRecommendationResponse recommend(RecruitmentOpportunity opp, List<Player> candidates) {
+    public SimpleRecommendationResponseDTO recommend(RecruitmentOpportunity opp, List<Player> candidates) {
         if (candidates == null || candidates.isEmpty()) {
-            return new SimpleRecommendationResponse(
+            return new SimpleRecommendationResponseDTO(
                     "No applicants yet.",
                     List.of(),
                     List.of(),
@@ -81,15 +81,15 @@ public class AiScoutingService {
 
         // Expected JSON:
         // { "ranking": [ {playerId, playerName, score, reason}, ... ] }
-        List<PlayerPick> ranking = parseRanking(jsonOnly);
+        List<PlayerPickDTO> ranking = parseRanking(jsonOnly);
         if (ranking.isEmpty()) {
             return fallbackListing("No clear ranking from AI. Showing applicants as tentative.", candidates);
         }
 
         // Bucket into suggested vs alternatives (but DO NOT expose noneStrong flag)
-        List<PlayerPick> suggested = ranking.stream()
+        List<PlayerPickDTO> suggested = ranking.stream()
                 .filter(p -> p.getScore() != null && p.getScore() >= minScore)
-                .sorted(Comparator.comparing(PlayerPick::getScore).reversed())
+                .sorted(Comparator.comparing(PlayerPickDTO::getScore).reversed())
                 .limit(maxSuggested)
                 .collect(Collectors.toList());
 
@@ -98,10 +98,10 @@ public class AiScoutingService {
 
         Set<Integer> usedIds = suggested.stream()
                 .filter(p -> p.getPlayerId() != null)
-                .map(PlayerPick::getPlayerId)
+                .map(PlayerPickDTO::getPlayerId)
                 .collect(Collectors.toSet());
 
-        List<PlayerPick> alternatives = ranking.stream()
+        List<PlayerPickDTO> alternatives = ranking.stream()
                 .filter(p -> p.getPlayerId() != null && !usedIds.contains(p.getPlayerId()))
                 .limit(maxAlternatives)
                 .collect(Collectors.toList());
@@ -125,7 +125,7 @@ public class AiScoutingService {
             message = "No suitable candidate; showing tentative picks.";
         }
 
-        return new SimpleRecommendationResponse(
+        return new SimpleRecommendationResponseDTO(
                 message,
                 suggested,
                 alternatives,
@@ -203,12 +203,12 @@ public class AiScoutingService {
         """.formatted(oppBlock, playersBlock, oppCategory, minScore);
     }
 
-    private List<PlayerPick> parseRanking(String json) {
+    private List<PlayerPickDTO> parseRanking(String json) {
         try {
             JsonNode root = mapper.readTree(json);
             if (!root.has("ranking") || !root.get("ranking").isArray()) return List.of();
-            List<PlayerPick> picks = mapper.convertValue(root.get("ranking"),
-                    new TypeReference<List<PlayerPick>>() {});
+            List<PlayerPickDTO> picks = mapper.convertValue(root.get("ranking"),
+                    new TypeReference<List<PlayerPickDTO>>() {});
             return picks.stream().map(p -> {
                 if (p.getReason() != null && p.getReason().length() > 160) {
                     p.setReason(p.getReason().substring(0, 160).trim());
@@ -221,15 +221,15 @@ public class AiScoutingService {
         }
     }
 
-    private SimpleRecommendationResponse fallbackListing(String msg, List<Player> candidates) {
-        List<PlayerPick> all = candidates.stream()
-                .map(p -> new PlayerPick(p.getId(), p.getName(), null, "Provisional."))
+    private SimpleRecommendationResponseDTO fallbackListing(String msg, List<Player> candidates) {
+        List<PlayerPickDTO> all = candidates.stream()
+                .map(p -> new PlayerPickDTO(p.getId(), p.getName(), null, "Provisional."))
                 .collect(Collectors.toList());
 
-        List<PlayerPick> suggested = all.isEmpty() ? List.of() : List.of(all.get(0));
-        List<PlayerPick> alternatives = all.stream().skip(1).limit(maxAlternatives).collect(Collectors.toList());
+        List<PlayerPickDTO> suggested = all.isEmpty() ? List.of() : List.of(all.get(0));
+        List<PlayerPickDTO> alternatives = all.stream().skip(1).limit(maxAlternatives).collect(Collectors.toList());
 
-        return new SimpleRecommendationResponse(
+        return new SimpleRecommendationResponseDTO(
                 msg,
                 suggested,
                 alternatives,

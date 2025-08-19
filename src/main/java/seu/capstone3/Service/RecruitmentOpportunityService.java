@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
-import seu.capstone3.DTOOUT.SimpleRecommendationResponse;
+import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
@@ -14,7 +14,6 @@ import seu.capstone3.Repository.PlayerRepository;
 import seu.capstone3.Repository.RecruitmentOpportunityRepository;
 import seu.capstone3.Repository.RequestJoiningRepository;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -95,7 +94,7 @@ public class RecruitmentOpportunityService {
         Club club = clubRepository.findClubById(recruitmentOpportunity.getClub().getId());
         Player player = playerRepository.findPlayerById(requestJoining.getPlayer().getId());
 
-        emailService.sendAcceptedEmail(player, club,recruitmentOpportunity);
+        emailService.sendAcceptedEmail(player, club);
         requestJoining.setStatus("ACCEPTED");
         club.getPlayers().add(player);
         player.setClub(club);
@@ -112,6 +111,7 @@ public class RecruitmentOpportunityService {
         if (recruitmentOpportunity == null || requestJoining == null) {
             throw new ApiException("Recruitment Opportunity or request Joining not found");
         }
+        emailService.sendRejectedEmail(requestJoining.getPlayer(),recruitmentOpportunity.getClub());
         requestJoining.setStatus("REJECTED");
         requestJoiningRepository.save(requestJoining);
     }
@@ -133,7 +133,7 @@ public class RecruitmentOpportunityService {
         recruitmentOpportunity.setStatus("CLOSED");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
-    public SimpleRecommendationResponse getAiRecommendations(Integer opportunityId) {
+    public SimpleRecommendationResponseDTO getAiRecommendations(Integer opportunityId) {
         RecruitmentOpportunity opp =
                 recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(opportunityId);
 
@@ -144,7 +144,7 @@ public class RecruitmentOpportunityService {
                         opportunityId, "PENDING");
 
         if (pendings == null || pendings.isEmpty()) {
-            return new SimpleRecommendationResponse(
+            return new SimpleRecommendationResponseDTO(
                     "No applicants yet.",
                     List.of(),
                     List.of(),

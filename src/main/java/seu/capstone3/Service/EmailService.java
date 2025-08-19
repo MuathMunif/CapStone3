@@ -25,11 +25,33 @@ public class EmailService {
         mailSender.send(msg);
     }
 
-    public void sendAcceptedEmail(Player player, Club club, RecruitmentOpportunity recruitmentOpportunity) {
+    public void sendAcceptedEmail(Player player, Club club) {
         mailMessage.setFrom("alimuaffag@gmail.com");
         mailMessage.setTo(player.getEmail());
         mailMessage.setSubject("Accepted Email");
-        String emailBody = "Dear " + player.getName() + ", you have been accepted by " + club.getName();
+        String emailBody =   "Dear " + player.getName() + ",\n\n"
+                + "Congratulations \n"
+                + "We are pleased to inform you that your joining request has been ACCEPTED.\n\n"
+                + "Club: " + club.getName() + "\n\n"
+                + "We look forward to seeing your contribution and wish you great success in your journey with us.\n\n"
+                + "Best regards,\n"
+                + club.getName() + " Management Team";
+        mailMessage.setText(emailBody);
+        mailSender.send(mailMessage);
+    }
+
+    public void sendRejectedEmail(Player player, Club club) {
+        mailMessage.setFrom("alimuaffag@gmail.com");
+        mailMessage.setTo(player.getEmail());
+        mailMessage.setSubject("Rejected Email");
+        String emailBody =   "Dear " + player.getName() + ",\n\n"
+                + "Thank you for your interest in joining "
+                + club.getName()+ " our club" + ".\n"
+                + "After careful consideration, we regret to inform you that your joining request "
+                + "has not been accepted this time.\n\n"
+                + "We truly appreciate your effort and encourage you to apply again in the future.\n\n"
+                + "Best regards,\n"
+                + club.getName() + " Management Team";
         mailMessage.setText(emailBody);
         mailSender.send(mailMessage);
     }

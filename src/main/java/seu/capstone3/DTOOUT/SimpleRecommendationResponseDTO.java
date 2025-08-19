@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data @AllArgsConstructor @NoArgsConstructor
-public class SimpleRecommendationResponse {
+public class SimpleRecommendationResponseDTO {
 
     private String message;
-    private List<PlayerPick> suggested;
-    private List<PlayerPick> alternatives;
+    private List<PlayerPickDTO> suggested;
+    private List<PlayerPickDTO> alternatives;
     private int applicants;
 }
