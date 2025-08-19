@@ -37,4 +37,11 @@ public class ClubController {
         clubService.deleteClub(id);
         return ResponseEntity.status(200).body(new ApiResponse("Club deleted successfully"));
     }
+
+    //Ex
+
+    @GetMapping("/get-club-by-id/{id}")
+    public ResponseEntity<?> getClubById(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(clubService.getClubById(id));
+    }
 }
