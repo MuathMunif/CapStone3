@@ -38,6 +38,10 @@ public class ClubService {
         if(category == null){
             throw new ApiException("Category not found");
         }
+        Club existingClub = clubRepository.findClubByEmail(clubDTO.getEmail());
+        if (existingClub != null) {
+            throw new ApiException("Club with this email: "+clubDTO.getEmail()+" already exist");
+        }
         Club club = new Club(null , clubDTO.getCr(),clubDTO.getName(),clubDTO.getEmail(),clubDTO.getPhoneNumber(),clubDTO.getLocation(),null,null,category);
         clubRepository.save(club);
     }

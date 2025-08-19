@@ -8,4 +8,6 @@ import seu.capstone3.Model.Sponsor;
 public interface SponsorRepository extends JpaRepository<Sponsor, Integer> {
 
     Sponsor findSponsorById(Integer id);
+
+    Sponsor findSponsorByEmail(String email);
 }
