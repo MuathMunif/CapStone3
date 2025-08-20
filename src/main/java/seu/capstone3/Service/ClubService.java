@@ -94,6 +94,7 @@ public class ClubService {
         dto.setLocation(club.getLocation());
 
         dto.setCategoryName(club.getCategory() != null ? club.getCategory().getName() : null);
+
         if (club.getPlayers() != null) {
             dto.setPlayerNames(
                     club.getPlayers().stream()
