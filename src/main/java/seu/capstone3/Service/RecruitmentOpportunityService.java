@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
-import seu.capstone3.DTOIN.RequestJoiningDTO;
 import seu.capstone3.DTOOUT.RecruitmentOpportunityOUTDTO;
 import seu.capstone3.DTOOUT.RequestJoiningOUTDTO;
 import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
@@ -52,7 +51,7 @@ public class RecruitmentOpportunityService {
         if (club == null) {
             throw new ApiException("Club not found");
         }
-        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTO.getDescription() ,"OPEN", club ,null);
+        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null,recruitmentOpportunityDTO.getTitle(), recruitmentOpportunityDTO.getDescription() ,"OPEN", club ,null);
         recruitmentOpportunity.setStatus("OPEN");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
@@ -142,11 +141,11 @@ public class RecruitmentOpportunityService {
 
         if (opp == null) throw new RuntimeException("Recruitment Opportunity not found");
 
-        List<RequestJoining> pendings =
+        List<RequestJoining> pending =
                 requestJoiningRepository.findAllByRecruitmentOpportunity_IdAndStatusIgnoreCase(
                         opportunityId, "PENDING");
 
-        if (pendings == null || pendings.isEmpty()) {
+        if (pending == null || pending.isEmpty()) {
             return new SimpleRecommendationResponseDTO(
                     "No applicants yet.",
                     List.of(),
@@ -156,7 +155,7 @@ public class RecruitmentOpportunityService {
         }
 
         // Always evaluate ALL applicants; category is handled in the prompt (mismatch gets lower score).
-        List<Player> candidates = pendings.stream()
+        List<Player> candidates = pending.stream()
                 .map(RequestJoining::getPlayer)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());

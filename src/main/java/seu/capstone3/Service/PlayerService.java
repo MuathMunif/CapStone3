@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.PlayerDTO;
 import seu.capstone3.DTOOUT.PlayerOUTDTO;
+import seu.capstone3.DTOOUT.PlayerSWAnalysisDTO;
+import seu.capstone3.DTOOUT.TrainingPlanSimpleDTO;
 import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Repository.CategoryRepository;
@@ -21,6 +23,7 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final CategoryRepository categoryRepository;
     private final MinioService minioService;
+    private final AiScoutingService aiScoutingService;
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -160,5 +163,15 @@ public class PlayerService {
     public Player getPlayerById(Integer id) {
         return playerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Player not found"));
+    }
+
+    public PlayerSWAnalysisDTO analyzePlayerStrengthsWeaknesses(Integer player_id) {
+        Player player = getPlayerById(player_id);
+        return aiScoutingService.analyzePlayerStrengthsWeaknesses(player);
+    }
+
+    public TrainingPlanSimpleDTO getTrainingPlanSimpleDto(Integer player_id,Integer days) {
+        Player player = getPlayerById(player_id);
+        return aiScoutingService.generateAutoTrainingPlan(player,days);
     }
 }
