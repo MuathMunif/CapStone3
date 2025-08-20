@@ -9,6 +9,7 @@ import seu.capstone3.DTOOUT.TournamentOutDTO;
 import seu.capstone3.Model.*;
 import seu.capstone3.Repository.*;
 
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
@@ -19,8 +20,13 @@ public class TournamentService {
     private final CategoryRepository categoryRepository;
     private final PlayerRepository playerRepository;
     private final TeamRepository teamRepository;
+    private final EmailService emailService;
 
 
+
+    public List<Tournament> getAllTournaments(){
+        return tournamentRepository.findAll();
+    }
 
     private void validatePlayersAndTeams(int numberOfPlayers, int numberOfTeams){
         if(numberOfPlayers % 2 != 0){
@@ -37,7 +43,9 @@ public class TournamentService {
         }
     }
 
-   public List<TournamentOutDTO> getAllTournaments(){
+
+
+   public List<TournamentOutDTO> getAllTournamentsOutDTO(){
         List<Tournament> tournaments = tournamentRepository.findAll();
         List<TournamentOutDTO> tournamentOutDTOS = new ArrayList<>();
 
@@ -48,6 +56,7 @@ public class TournamentService {
             tournamentOutDTO.setEndDate(t.getEndDate());
             tournamentOutDTO.setLocation(t.getLocation());
             tournamentOutDTO.setCategoryName(t.getCategory().getName());
+            tournamentOutDTO.setStatus(t.getStatus());
 
             tournamentOutDTOS.add(tournamentOutDTO);
         }
@@ -65,6 +74,7 @@ public class TournamentService {
 
         validatePlayersAndTeams(tournamentDTO.getNumberOfPlayers(),tournamentDTO.getNumberOfTeams());
 
+
         Tournament tournament = new Tournament(null ,tournamentDTO.getName(),
                 tournamentDTO.getDescription(),
                 tournamentDTO.getNumberOfPlayers(),
@@ -75,7 +85,9 @@ public class TournamentService {
                 tournamentDTO.getNumberOfTeams(),
                 null,
                 null,
+                "OPEN",
                 0);
+
         tournamentRepository.save(tournament);
     }
 
@@ -134,7 +146,11 @@ public class TournamentService {
             throw new ApiException("Player is already registered in this tournament");
         }
 
-        // التحقق من تعارض مواعيد البطولات الأخرى
+        if(tournament.getStatus().equals("CLOSED")){
+            throw new ApiException("Sorry, tournament closed");
+        }
+
+
         for (Tournament t : player.getTournaments()) {
             boolean overlap = !(tournament.getEndDate().isBefore(t.getStartDate()) || tournament.getStartDate().isAfter(t.getEndDate()));
             if (overlap) {
@@ -148,10 +164,17 @@ public class TournamentService {
         if (player.getTournaments() == null) {
             player.setTournaments(new HashSet<>());
         }
+        if (Objects.equals(tournament.getPlayerCounter(), tournament.getNumberOfPlayers())) {
+            tournament.setStatus("FULL");
+        }
+
         player.getTournaments().add(tournament);
 
         playerRepository.save(player);
         tournamentRepository.save(tournament);
+        emailService.sendTournamentWelcome(tournament, player);
+
+
     }
 
 
@@ -198,17 +221,17 @@ public class TournamentService {
             Set<Player> teamPlayers = new HashSet<>();
             for (int j = 0; j < playersPerTeam; j++) {
                 Player player = playersList.get(i * playersPerTeam + j);
-                player.setTeam(team); // ربط اللاعب بالفريق
+                player.setTeam(team);
                 teamPlayers.add(player);
             }
 
             team.setPlayers(teamPlayers);
-            teamRepository.save(team); // حفظ الفريق مع اللاعبين
+            teamRepository.save(team);
             teams.add(team);
         }
 
         tournament.setTeams(teams);
-        tournamentRepository.save(tournament); // حفظ البطولة مع الفرق
+        tournamentRepository.save(tournament);
     }
 
 
@@ -223,33 +246,6 @@ public class TournamentService {
         }
 
         return tournament.getTeams();
-    }
-
-    public void closeTournament(Integer tournamentId) {
-        Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
-        if (tournament == null) {
-            throw new ApiException("Tournament not found");
-        }
-
-        // فك ارتباط اللاعبين بالبطولة (ManyToMany)
-        for (Player player : tournament.getPlayers()) {
-            player.getTournaments().remove(tournament);
-        }
-        tournament.getPlayers().clear();
-
-        // حذف الفرق المرتبطة بالبطولة
-        Set<Team> teams = tournament.getTeams();
-        for (Team team : teams) {
-            for (Player player : team.getPlayers()) {
-                player.setTeam(null); // فك ارتباط اللاعب بالفريق
-            }
-            team.getPlayers().clear();
-            teamRepository.delete(team);
-        }
-        teams.clear();
-
-        // حذف البطولة نفسها
-        tournamentRepository.delete(tournament);
     }
 
 
@@ -273,5 +269,82 @@ public class TournamentService {
      return result;
  }
 
+ public List<TournamentOutDTO> getOpenTournaments(){
 
+     List<Tournament> openTournaments = tournamentRepository.findOpenTournaments();
+     List<TournamentOutDTO> dtoList = new ArrayList<>();
+
+    for(Tournament t: openTournaments){
+        TournamentOutDTO dto = new TournamentOutDTO();
+        dto.setName(t.getName());
+        dto.setStartDate(t.getStartDate());
+        dto.setEndDate(t.getEndDate());
+        dto.setLocation(t.getLocation());
+        dto.setCategoryName(t.getCategory().getName());
+        dto.setStatus(t.getStatus());
+        dtoList.add(dto);
+    }
+    return dtoList;
+ }
+
+ public void closeTournament(Integer sponsorId, Integer tournamentId){
+
+        Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
+
+     if (tournament == null) {
+         throw new ApiException("Tournament not found");
+     }
+     if(!Objects.equals(tournament.getSponsor().getId(), sponsorId)){
+         throw new ApiException("You are not allowed to close this tournament");
+     }
+
+     tournament.setStatus("CLOSED");
+     tournamentRepository.save(tournament);
+ }
+
+
+ public Integer remainingPlayersToFull(Integer tournamentId){
+        Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
+
+     if (tournament == null) {
+         throw new ApiException("Tournament not found");
+     }
+
+     return tournament.getNumberOfPlayers() - tournament.getPlayerCounter();
+ }
+
+
+    public void withdrawPlayerFromTournament(Integer tournamentId, Integer playerId) {
+        Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
+        Player player = playerRepository.findPlayerById(playerId);
+
+        if (tournament == null || player == null) {
+            throw new ApiException("Tournament or player not found");
+        }
+
+
+        if (!tournament.getPlayers().contains(player)) {
+            throw new ApiException("Player is not registered in this tournament");
+        }
+
+        long daysUntilTournament = ChronoUnit.DAYS.between(java.time.LocalDate.now(), tournament.getStartDate());
+
+        if (daysUntilTournament < 2) {
+            throw new ApiException("You cannot withdraw, less than 2 days remaining until the tournament");
+        }
+
+        tournament.getPlayers().remove(player);
+        tournament.setPlayerCounter(tournament.getPlayerCounter() - 1);
+
+        if (player.getTournaments() != null) {
+            player.getTournaments().remove(tournament);
+        }
+
+        if (tournament.getStatus().equals("FULL")) {
+            tournament.setStatus("OPEN");
+        }
+
+        playerRepository.save(player);
+        tournamentRepository.save(tournament);
+    }
 }

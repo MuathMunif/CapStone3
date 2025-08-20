@@ -1,5 +1,6 @@
 package seu.capstone3.DTOIN;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,6 +42,8 @@ public class TournamentDTO {
     @NotNull(message = "The number of teams must not be empty")
     @Positive(message = "The number of teams must be a valid number")
     private Integer numberOfTeams;
+
+
 
 
 

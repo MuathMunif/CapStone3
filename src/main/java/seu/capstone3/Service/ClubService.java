@@ -94,6 +94,7 @@ public class ClubService {
         dto.setLocation(club.getLocation());
 
         dto.setCategoryName(club.getCategory() != null ? club.getCategory().getName() : null);
+
         if (club.getPlayers() != null) {
             dto.setPlayerNames(
                     club.getPlayers().stream()
@@ -117,6 +118,23 @@ public class ClubService {
     // get all club dto
     public List<ClubOUTDTO> getAllClubsDto() {
         return clubRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+    // get all club by location 'DTO'
+    public List<ClubOUTDTO> getClubsByLocation(String location) {
+        return clubRepository.findByLocationIgnoreCase(location)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+    public List<ClubOUTDTO> getClubsByCategory(Integer categoryId) {
+        return clubRepository.findByCategoryId(categoryId)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();

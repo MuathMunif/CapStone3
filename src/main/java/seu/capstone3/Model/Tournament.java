@@ -63,6 +63,9 @@ public class Tournament {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private Set<Team> teams;
 
+    @NotEmpty(message = "Status must not be empty")
+    @Column(columnDefinition = "varchar(20) not null")
+    private String status = "OPEN";
 
     private Integer playerCounter = 0;
 
