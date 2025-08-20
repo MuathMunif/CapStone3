@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecruitmentOpportunityDTO {
 
+    private String title;
     private String description;
-
     private Integer club_id;
 
 }

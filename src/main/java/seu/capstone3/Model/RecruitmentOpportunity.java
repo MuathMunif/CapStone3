@@ -22,6 +22,10 @@ public class RecruitmentOpportunity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotEmpty(message = "The title must be not empty")
+    @Column(columnDefinition = "varchar(20) not null")
+    private String title;
+
     @NotEmpty(message = "The description must be not empty")
     @Column(columnDefinition = "varchar(500) not null")
     private String description;

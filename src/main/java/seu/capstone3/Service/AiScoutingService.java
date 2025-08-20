@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatOptions;
 
+import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOOUT.PlayerPickDTO;
 import seu.capstone3.DTOOUT.PlayerSWAnalysisDTO;
 import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
+import seu.capstone3.DTOOUT.TrainingPlanSimpleDTO;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
 
@@ -282,9 +284,6 @@ public class AiScoutingService {
     private double nd(Double d){ return d==null? 0.0: d; }
 
 
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     public PlayerSWAnalysisDTO analyzePlayerStrengthsWeaknesses(Player player) {
         try {
             String prompt = """
@@ -327,7 +326,7 @@ public class AiScoutingService {
                     .call()
                     .content();
 
-            JsonNode json = objectMapper.readTree(raw);
+            JsonNode json = mapper.readTree(raw);
 
             PlayerSWAnalysisDTO dto = new PlayerSWAnalysisDTO();
             dto.setPlayerId(player.getId());
@@ -364,9 +363,107 @@ public class AiScoutingService {
         }
     }
 
-    private String safe(Object v) {
-        return v == null ? "N/A" : String.valueOf(v);
+
+    // AiScoutingService.java
+    public TrainingPlanSimpleDTO generateAutoTrainingPlan(Player player, int days) {
+        String sport = extractSport(player); // يقرأ category فقط
+
+        String prompt = """
+        You are a sports coach. Based ONLY on the player's sport (category) and description,
+        generate a SIMPLE plan and decide the primary focus yourself.
+        Return ONLY a single valid JSON object (no markdown) with:
+        {
+          "playerId": <number>,
+          "playerName": "<string>",
+          "sport": "<string>",
+          "days": <number>,
+          "focus": "<speed|stamina|strength|agility|balanced>",
+          "plan": [
+            { "day": <1..days>, "title": "<short>", "workout": "<one line>", "notes": "<short>" }
+          ]
+        }
+
+        Rules:
+        - Use sport-specific terminology for the given sport.
+        - Include at least 1 rest day per week.
+        - Vary titles; avoid generic placeholders (e.g., "General session", "Focus on form").
+        - Days MUST equal %d (1..%d). Output JSON only.
+
+        Player:
+        Name: %s
+        Sport (category): %s
+        Description: %s
+        Requested days: %d
+        """.formatted(days, days,
+                safe(player.getName()), sport, safe(player.getDescription()), days);
+
+        try {
+            OpenAiChatOptions opts = OpenAiChatOptions.builder()
+                    .model("gpt-4o")
+                    .temperature(0.25)
+                    .build();
+
+            String raw = chatClient.prompt(prompt).options(opts).call().content();
+            JsonNode json = parseJsonLenient(raw); // ينظف أي code fences ويقرأ JSON
+
+            TrainingPlanSimpleDTO dto = mapPlanJson(player, json, sport, days);
+            if (dto.getPlan() == null || dto.getPlan().isEmpty()) {
+                throw new IllegalStateException("Empty AI plan");
+            }
+            ensureLength(dto.getPlan(), dto.getDays()); // ضبط 1..days
+            return dto;
+
+        } catch (Exception e) {
+
+            throw new ApiException("AI_TRAINING_PLAN_FAILED: " + e.getMessage());
+        }
     }
 
+    private JsonNode parseJsonLenient(String raw) throws Exception {
+        String s = raw == null ? "" : raw.trim();
+        int start = s.indexOf('{');
+        int end = s.lastIndexOf('}');
+        if (start >= 0 && end > start) s = s.substring(start, end + 1);
+        return mapper.readTree(s);
+    }
+
+    private TrainingPlanSimpleDTO mapPlanJson(Player player, JsonNode json, String sport, int days) {
+        TrainingPlanSimpleDTO dto = new TrainingPlanSimpleDTO();
+        dto.setPlayerId(player.getId());
+        dto.setPlayerName(player.getName());
+        dto.setSport(json.path("sport").asText(sport));
+        dto.setDays(json.path("days").asInt(days));
+        dto.setFocus(json.path("focus").asText("balanced"));
+        List<TrainingPlanSimpleDTO.Day> out = new ArrayList<>();
+        JsonNode arr = json.path("plan");
+        if (arr != null && arr.isArray()) {
+            for (JsonNode n : arr) {
+                TrainingPlanSimpleDTO.Day d = new TrainingPlanSimpleDTO.Day();
+                d.setDay(n.path("day").asInt(out.size() + 1));
+                d.setTitle(n.path("title").asText("Session"));
+                d.setWorkout(n.path("workout").asText("Sport-specific drills 30–40 min"));
+                d.setNotes(n.path("notes").asText("Quality over volume"));
+                out.add(d);
+            }
+        }
+        dto.setPlan(out);
+        return dto;
+    }
+
+    private void ensureLength(List<TrainingPlanSimpleDTO.Day> plan, int days) {
+        if (plan == null) return;
+        while (plan.size() > days) plan.remove(plan.size() - 1);
+        while (plan.size() < days) plan.add(new TrainingPlanSimpleDTO.Day(plan.size() + 1, "Rest", "Walk 20 min + stretch", "Hydrate"));
+        for (int i = 0; i < plan.size(); i++) plan.get(i).setDay(i + 1);
+    }
+
+    private String extractSport(Player p) {
+        try {
+            if (p.getCategory() != null && p.getCategory().getName() != null)
+                return p.getCategory().getName();
+        } catch (Exception ignored) {}
+        return "Unknown";
+    }
+    private String safe(Object v) { return v == null ? "N/A" : String.valueOf(v); }
 
 }

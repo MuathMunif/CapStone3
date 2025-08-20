@@ -13,9 +13,9 @@ import java.util.Map;
 public class PlayerSWAnalysisDTO {
     private Integer playerId;
     private String playerName;
-    private List<String> strengths;        // أمثلة: "سرعة عالية", "تمركز ممتاز"
-    private List<String> weaknesses;       // أمثلة: "لياقة ضعيفة", "قرارات تحت الضغط"
-    private Map<String, Integer> skillScores; // { "speed": 88, "stamina": 62, ... }
-    private String summary;                // ملخص نصي موجز
-    private Double confidence;             // 0.0 - 1.0
+    private List<String> strengths;
+    private List<String> weaknesses;
+    private Map<String, Integer> skillScores;
+    private String summary;
+    private Double confidence;
 }

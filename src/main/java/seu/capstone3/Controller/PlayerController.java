@@ -81,10 +81,13 @@ public class PlayerController {
         return ResponseEntity.status(200).body(playerService.getAllPlayersDto());
     }
 
-    @GetMapping("/strengths-weaknesses/{id}")
-    public ResponseEntity<PlayerSWAnalysisDTO> analyzeStrengthsWeaknesses(@PathVariable Integer id) {
-        Player player = playerService.getPlayerById(id);
-        PlayerSWAnalysisDTO result = aiScoutingService.analyzePlayerStrengthsWeaknesses(player);
-        return ResponseEntity.ok(result);
+    @GetMapping("/strengths-weaknesses/{player_id}")
+    public ResponseEntity<?> analyzeStrengthsWeaknesses(@PathVariable Integer player_id) {
+        return ResponseEntity.status(200).body(playerService.analyzePlayerStrengthsWeaknesses(player_id));
+    }
+
+    @GetMapping("/training-plan/{player_id}/{days}")
+    public ResponseEntity<?> trainingPlan(@PathVariable Integer player_id,@PathVariable Integer days){
+        return ResponseEntity.status(200).body(playerService.getTrainingPlanSimpleDto(player_id,days));
     }
 }
