@@ -2,13 +2,16 @@ package seu.capstone3.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.PlayerDTO;
+import seu.capstone3.DTOOUT.PlayerOUTDTO;
 import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Repository.CategoryRepository;
 import seu.capstone3.Repository.PlayerRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,6 +20,7 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final CategoryRepository categoryRepository;
+    private final MinioService minioService;
 
     public List<Player> getAllPlayers() {
         return playerRepository.findAll();
@@ -44,6 +48,7 @@ public class PlayerService {
                 playerDTO.getWeight(),
                 playerDTO.getDescription(),
                 playerDTO.getSkills(),
+                null,
                 null,
                 null,
                 category,
@@ -77,5 +82,78 @@ public class PlayerService {
             throw new ApiException("Player not found");
         }
         playerRepository.delete(player);
+    }
+
+
+
+    // upload player CV
+    public void uploadCv(Integer playerId, MultipartFile cvFile) throws Exception {
+        Player player = playerRepository.findPlayerById(playerId);
+        if (player == null) {
+            throw new ApiException("Player not found");
+        }
+
+        String objectName = "player-" + playerId + "-cv-" + cvFile.getOriginalFilename();
+
+        String fileUrl = minioService.uploadFile(cvFile, objectName);
+
+        player.setCvUrl(fileUrl);
+        playerRepository.save(player);
+    }
+
+
+    // this to convert player to dto
+    public PlayerOUTDTO convertToDTO(Player player) {
+        PlayerOUTDTO dto = new PlayerOUTDTO();
+        dto.setName(player.getName());
+        dto.setEmail(player.getEmail());
+        dto.setPhoneNumber(player.getPhoneNumber());
+        dto.setAge(player.getAge());
+        dto.setLocation(player.getLocation());
+        dto.setHeight(player.getHeight());
+        dto.setWeight(player.getWeight());
+        dto.setDescription(player.getDescription());
+        dto.setSkills(player.getSkills());
+        dto.setCvUrl(player.getCvUrl());
+
+        dto.setClubName(player.getClub() != null ? player.getClub().getName() : null);
+        dto.setCategoryName(player.getCategory() != null ? player.getCategory().getName() : null);
+
+        return dto;
+    }
+
+
+    // get player by ID with CV
+    public PlayerOUTDTO getPlayerWithCv(Integer id) throws Exception {
+        Player player = playerRepository.findPlayerById(id);
+        if (player == null) {
+            throw new ApiException("Player not found");
+        }
+        PlayerOUTDTO dto = convertToDTO(player);
+
+        if (player.getCvUrl() != null) {
+            String presignedUrl = minioService.getPresignedUrl(player.getCvUrl());
+            dto.setCvUrl(presignedUrl);
+        }
+
+        return dto;
+    }
+
+
+    // get all players with dto
+    public List<PlayerOUTDTO> getAllPlayersDto() {
+        return playerRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+    //get all players without club
+    public List<PlayerOUTDTO> getPlayersWithoutClub() {
+        return playerRepository.getPlayersWithoutClub()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 }

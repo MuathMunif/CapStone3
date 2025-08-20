@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
+import seu.capstone3.DTOIN.RequestJoiningDTO;
+import seu.capstone3.DTOOUT.RecruitmentOpportunityOUTDTO;
+import seu.capstone3.DTOOUT.RequestJoiningOUTDTO;
 import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.Player;
@@ -160,4 +163,50 @@ public class RecruitmentOpportunityService {
 
         return aiScoutingService.recommend(opp, candidates);
     }
+
+
+
+    // this method to convert to dto
+    public RecruitmentOpportunityOUTDTO convertToDTO(RecruitmentOpportunity opportunity) {
+        RecruitmentOpportunityOUTDTO dto = new RecruitmentOpportunityOUTDTO();
+        dto.setClubName(opportunity.getClub() != null ? opportunity.getClub().getName() : null);
+        dto.setDescription(opportunity.getDescription());
+        dto.setStatus(opportunity.getStatus());
+
+        if (opportunity.getRequestJoinings() != null) {
+            dto.setRequests(
+                    opportunity.getRequestJoinings().stream()
+                            .map(req -> new RequestJoiningOUTDTO(
+                                    req.getId(),
+                                    req.getPlayer().getName(),
+                                    req.getStatus()
+                            ))
+                            .toList()
+            );
+        }
+        return dto;
+    }
+
+
+    // get all Recruitment Opportunities with dto
+    public List<RecruitmentOpportunityOUTDTO> getAllRecruitmentOpportunitiesDto() {
+        List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findAll();
+        return opportunities.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+    // get all Recruitment Opportunities for one club
+    public List<RecruitmentOpportunityOUTDTO> getOpportunitiesByClubId(Integer clubId) {
+        List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findByClub_Id(clubId);
+        if (opportunities.isEmpty()) {
+            throw new ApiException("No opportunities found for this club");
+        }
+        return opportunities.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
 }

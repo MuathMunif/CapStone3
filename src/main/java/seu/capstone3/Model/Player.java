@@ -67,6 +67,9 @@ public class Player {
     @JsonIgnore
     private Set<RequestJoining> requestJoinings;
 
+
+    private String cvUrl;
+
     @ManyToOne
     private Club club;
 

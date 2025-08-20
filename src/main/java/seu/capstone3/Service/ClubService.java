@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.ClubDTO;
+import seu.capstone3.DTOOUT.ClubOUTDTO;
 import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Club;
+import seu.capstone3.Model.Player;
+import seu.capstone3.Model.RecruitmentOpportunity;
 import seu.capstone3.Repository.CategoryRepository;
 import seu.capstone3.Repository.ClubRepository;
 
@@ -79,5 +82,43 @@ public class ClubService {
             throw new ApiException("Club not found");
         }
         return club;
+    }
+
+
+    // this method to convert to dto
+    public ClubOUTDTO convertToDTO(Club club) {
+        ClubOUTDTO dto = new ClubOUTDTO();
+        dto.setName(club.getName());
+        dto.setEmail(club.getEmail());
+        dto.setPhoneNumber(club.getPhoneNumber());
+        dto.setLocation(club.getLocation());
+
+        dto.setCategoryName(club.getCategory() != null ? club.getCategory().getName() : null);
+        if (club.getPlayers() != null) {
+            dto.setPlayerNames(
+                    club.getPlayers().stream()
+                            .map(Player::getName)
+                            .toList()
+            );
+        }
+        return dto;
+    }
+
+    // get club by Id dto
+    public ClubOUTDTO getClubByIdDto(Integer id) {
+        Club club = clubRepository.findClubById(id);
+        if(club == null){
+            throw new ApiException("Club not found");
+        }
+        return convertToDTO(club);
+    }
+
+
+    // get all club dto
+    public List<ClubOUTDTO> getAllClubsDto() {
+        return clubRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 }

@@ -68,4 +68,15 @@ public class RecruitmentOpportunityController {
     }
 
 
+    @GetMapping("/get-all-dto")
+    public ResponseEntity<?> getAllRecruitmentOpportunitiesDto() {
+        return ResponseEntity.status(200).body(recruitmentOpportunityService.getAllRecruitmentOpportunitiesDto());
+    }
+
+
+    @GetMapping("/get-all-by-club-id/{id}")
+    public ResponseEntity<?> getAllRecruitmentOpportunitiesByClubId(@PathVariable Integer id) {
+        return ResponseEntity.status(200).body(recruitmentOpportunityService.getOpportunitiesByClubId(id));
+    }
+
 }
