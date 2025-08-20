@@ -44,4 +44,16 @@ public class ClubController {
     public ResponseEntity<?> getClubById(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(clubService.getClubById(id));
     }
+
+    // dto
+    @GetMapping("/get-club-by-id-dto/{id}")
+    public ResponseEntity<?> getClubByIdDto(@PathVariable Integer id){
+        return ResponseEntity.status(200).body(clubService.getClubByIdDto(id));
+    }
+
+
+    @GetMapping("/get-all-clubs-dto")
+    public ResponseEntity<?> getAllClubsDto(){
+        return ResponseEntity.status(200).body(clubService.getAllClubsDto());
+    }
 }
