@@ -16,13 +16,15 @@ public class TournamentOutDTO {
     private LocalDate endDate;
     private String location;
     private String categoryName;
+    private String status;
 
     public TournamentOutDTO(String name, LocalDate startDate, LocalDate endDate,
-                            String location, String categoryName){
+                            String location, String categoryName, String status){
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.location = location;
         this.categoryName = categoryName;
+        this.status = status;
     }
 }

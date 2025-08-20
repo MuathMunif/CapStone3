@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import seu.capstone3.Model.Club;
-import seu.capstone3.Model.Player;
-import seu.capstone3.Model.RecruitmentOpportunity;
-import seu.capstone3.Model.RequestJoining;
+import seu.capstone3.Model.*;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +52,28 @@ public class EmailService {
         mailMessage.setText(emailBody);
         mailSender.send(mailMessage);
     }
+
+    public void sendTournamentWelcome(Tournament tournament, Player player){
+        SimpleMailMessage msg = new SimpleMailMessage();
+        msg.setFrom("alimuaffag@gmail.com");
+        msg.setTo(player.getEmail());
+        msg.setSubject("Welcome to " + tournament.getName() + " Tournament!");
+
+        String emailBody = "Dear " + player.getName() + ",\n\n"
+                + "Welcome to the " + tournament.getName() + " tournament!\n\n"
+                + "Tournament Details:\n"
+                + "Start Date: " + tournament.getStartDate() + "\n"
+                + "End Date: " + tournament.getEndDate() + "\n"
+                + "Location: " + tournament.getLocation() + "\n"
+                + "Sponsor: " + tournament.getSponsor().getName() + "\n\n"
+                + "We are excited to have you participate and wish you the best of luck!\n\n"
+                + "Best regards,\n"
+                + tournament.getName() + " Management Team";
+
+        msg.setText(emailBody);
+        mailSender.send(msg);
+    }
+
 
 
 }

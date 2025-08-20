@@ -15,7 +15,7 @@ import seu.capstone3.Service.TournamentService;
 import java.util.Set;
 
 @RestController
-    @RequestMapping("/api/v1/tournament")
+@RequestMapping("/api/v1/tournament")
 @RequiredArgsConstructor
 public class TournamentController {
     private final TournamentService tournamentService;
@@ -24,6 +24,12 @@ public class TournamentController {
     public ResponseEntity<?> getAllTournaments(){
         return ResponseEntity.status(200).body(tournamentService.getAllTournaments());
     }
+
+    @GetMapping("/get-tournamentsOutDTO")
+    public ResponseEntity<?> getAllTournamentsOutDTO(){
+        return ResponseEntity.status(200).body(tournamentService.getAllTournamentsOutDTO());
+    }
+
 
 
     @PostMapping("/add")
@@ -70,14 +76,31 @@ public class TournamentController {
         return tournamentService.getTeamsInTournament(tournamentId);
     }
 
-    @PostMapping("/{tournamentId}/close")
-    public ResponseEntity<?> closeTournament(@PathVariable Integer tournamentId){
-        tournamentService.closeTournament(tournamentId);
+    @PostMapping("{sponsorId}/{tournamentId}/close")
+    public ResponseEntity<?> closeTournament(@PathVariable Integer sponsorId,@PathVariable Integer tournamentId){
+        tournamentService.closeTournament(sponsorId,tournamentId);
         return ResponseEntity.status(200).body(new ApiResponse("Tournament Closed"));
     }
 
     @GetMapping("/get-player-tournament/{email}")
     public ResponseEntity<?> getPlayerTournament(@PathVariable String email){
         return ResponseEntity.status(200).body(tournamentService.getPlayerTournament(email));
+    }
+
+    @GetMapping("/get-open-tournaments")
+    public ResponseEntity<?> getOpenTournaments(){
+        return ResponseEntity.status(200).body(tournamentService.getOpenTournaments());
+    }
+
+
+    @GetMapping("/get-remaining-players/{tournamentId}")
+    public ResponseEntity<?> remainingPlayersToFull(@PathVariable Integer tournamentId){
+        return ResponseEntity.status(200).body(tournamentService.remainingPlayersToFull(tournamentId));
+    }
+
+    @PutMapping("/withdraw/{tournamentId}/{playerId}")
+    public ResponseEntity<?> withdrawPlayerFromTournament(@PathVariable Integer tournamentId,@PathVariable Integer playerId){
+        tournamentService.withdrawPlayerFromTournament(tournamentId,playerId);
+        return ResponseEntity.status(200).body(new ApiResponse("Withdrawal completed successfully"));
     }
 }
