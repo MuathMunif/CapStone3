@@ -68,4 +68,10 @@ public class ClubController {
     public ResponseEntity<?> getAllClubsByCategoryId(@PathVariable Integer id){
         return ResponseEntity.status(200).body(clubService.getClubsByCategory(id));
     }
+
+    @PostMapping("qualified-email/{recruitmentOpportunity_id}/{player_id}/{club_id}")
+    public ResponseEntity<?>  sendQualifiedEmailToPlayer(@PathVariable Integer recruitmentOpportunity_id,@PathVariable Integer player_id,@PathVariable Integer club_id){
+        clubService.sendQualifiedEmailToPlayer(recruitmentOpportunity_id, player_id, club_id);
+        return ResponseEntity.status(200).body(new ApiResponse("Email sent successfully"));
+    }
 }
