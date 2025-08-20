@@ -23,7 +23,7 @@ public class Club {
     private Integer id;
 
     @NotEmpty(message = "The CR must be not empty")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10) not null unique")
     private String cr;
 
     @NotEmpty(message = "The name must be not empty")

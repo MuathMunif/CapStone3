@@ -91,6 +91,7 @@ public class TournamentService {
         tournamentRepository.save(tournament);
     }
 
+    //todo to be used TournamentDTO
     public void updateTournament(Integer tournamentId ,Tournament tournament){
         Tournament oldTournament = tournamentRepository.findTournamentById(tournamentId);
         if (oldTournament == null) {

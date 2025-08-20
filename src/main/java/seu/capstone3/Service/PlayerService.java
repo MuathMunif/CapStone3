@@ -156,4 +156,9 @@ public class PlayerService {
                 .map(this::convertToDTO)
                 .toList();
     }
+
+    public Player getPlayerById(Integer id) {
+        return playerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+    }
 }
