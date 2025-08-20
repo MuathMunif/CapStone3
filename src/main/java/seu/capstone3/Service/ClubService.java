@@ -121,4 +121,21 @@ public class ClubService {
                 .map(this::convertToDTO)
                 .toList();
     }
+
+
+    // get all club by location 'DTO'
+    public List<ClubOUTDTO> getClubsByLocation(String location) {
+        return clubRepository.findByLocationIgnoreCase(location)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+
+    public List<ClubOUTDTO> getClubsByCategory(Integer categoryId) {
+        return clubRepository.findByCategoryId(categoryId)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
 }
