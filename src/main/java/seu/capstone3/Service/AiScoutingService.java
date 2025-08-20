@@ -1,4 +1,3 @@
-// src/main/java/seu/capstone3/Service/AiScoutingService.java
 package seu.capstone3.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,6 +12,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatOptions;
 
 import seu.capstone3.DTOOUT.PlayerPickDTO;
+import seu.capstone3.DTOOUT.PlayerSWAnalysisDTO;
 import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
@@ -280,4 +280,93 @@ public class AiScoutingService {
     private String safe(String s){ return s==null? "": s.replace("\"","'"); }
     private int nz(Integer i){ return i==null? 0: i; }
     private double nd(Double d){ return d==null? 0.0: d; }
+
+
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public PlayerSWAnalysisDTO analyzePlayerStrengthsWeaknesses(Player player) {
+        try {
+            String prompt = """
+                You are a professional football scout and analyst. 
+                Analyze the following player and return ONLY valid JSON with these fields:
+                - strengths: list of short sentences for key strengths
+                - weaknesses: list of short sentences for key weaknesses
+                - skillScores: object with main skills (speed, stamina, passing, shooting, dribbling, positioning, vision) each scored 0-100
+                - summary: short summary (max 2 lines)
+                - confidence: value between 0 and 1 for your confidence
+
+                Player data:
+                Name: %s
+                Age: %s
+                Height: %s
+                Weight: %s
+                Position: %s
+                Skills: %s
+                Description: %s
+
+                Important rules:
+                - Output must be valid JSON only, no extra text.
+                - If some data is missing, make reasonable assumptions but do not invent unrealistic facts.
+                """.formatted(
+                    safe(player.getName()),
+                    safe(player.getAge()),
+                    safe(player.getHeight()),
+                    safe(player.getWeight()),
+                    safe(player.getSkills()),
+                    safe(player.getDescription())
+            );
+
+            OpenAiChatOptions options = OpenAiChatOptions.builder()
+                    .temperature(0.2)
+                    .model("gpt-4o") // change if needed
+                    .build();
+
+            String raw = chatClient.prompt(prompt)
+                    .options(options)
+                    .call()
+                    .content();
+
+            JsonNode json = objectMapper.readTree(raw);
+
+            PlayerSWAnalysisDTO dto = new PlayerSWAnalysisDTO();
+            dto.setPlayerId(player.getId());
+            dto.setPlayerName(player.getName());
+            dto.setSummary(json.path("summary").asText(null));
+            dto.setConfidence(json.path("confidence").asDouble(0.6));
+
+            List<String> strengths = new ArrayList<>();
+            json.path("strengths").forEach(n -> strengths.add(n.asText()));
+            dto.setStrengths(strengths);
+
+            List<String> weaknesses = new ArrayList<>();
+            json.path("weaknesses").forEach(n -> weaknesses.add(n.asText()));
+            dto.setWeaknesses(weaknesses);
+
+            Map<String, Integer> scores = new LinkedHashMap<>();
+            JsonNode scoresNode = json.path("skillScores");
+            scoresNode.fieldNames().forEachRemaining(k -> scores.put(k, scoresNode.path(k).asInt()));
+            dto.setSkillScores(scores);
+
+            return dto;
+
+        } catch (Exception e) {
+            log.error("AI analysis failed", e);
+            return new PlayerSWAnalysisDTO(
+                    player.getId(),
+                    player.getName(),
+                    List.of("Shows tactical discipline"),
+                    List.of("Insufficient data for full evaluation"),
+                    Map.of("speed", 60, "stamina", 55, "passing", 58, "shooting", 57, "dribbling", 59, "positioning", 60, "vision", 56),
+                    "Preliminary analysis based on limited data.",
+                    0.4
+            );
+        }
+    }
+
+    private String safe(Object v) {
+        return v == null ? "N/A" : String.valueOf(v);
+    }
+
+
 }

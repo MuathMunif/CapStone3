@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import seu.capstone3.Api.ApiResponse;
 import seu.capstone3.DTOIN.PlayerDTO;
+import seu.capstone3.DTOOUT.PlayerSWAnalysisDTO;
 import seu.capstone3.Model.Player;
+import seu.capstone3.Service.AiScoutingService;
 import seu.capstone3.Service.PlayerService;
 
 @RestController
@@ -16,6 +18,7 @@ import seu.capstone3.Service.PlayerService;
 public class PlayerController {
 
     private final PlayerService playerService;
+    private final AiScoutingService aiScoutingService;
 
     @GetMapping("/get")
     public ResponseEntity<?> getAllPlayers() {
@@ -76,5 +79,12 @@ public class PlayerController {
     public ResponseEntity<?> getAllPlayerDTO(){
         playerService.getAllPlayersDto();
         return ResponseEntity.status(200).body(playerService.getAllPlayersDto());
+    }
+
+    @GetMapping("/strengths-weaknesses/{id}")
+    public ResponseEntity<PlayerSWAnalysisDTO> analyzeStrengthsWeaknesses(@PathVariable Integer id) {
+        Player player = playerService.getPlayerById(id);
+        PlayerSWAnalysisDTO result = aiScoutingService.analyzePlayerStrengthsWeaknesses(player);
+        return ResponseEntity.ok(result);
     }
 }
