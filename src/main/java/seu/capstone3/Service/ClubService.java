@@ -11,6 +11,8 @@ import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
 import seu.capstone3.Repository.CategoryRepository;
 import seu.capstone3.Repository.ClubRepository;
+import seu.capstone3.Repository.PlayerRepository;
+import seu.capstone3.Repository.RecruitmentOpportunityRepository;
 
 import java.util.List;
 
@@ -20,9 +22,12 @@ public class ClubService {
 
     private final ClubRepository clubRepository;
     private final CategoryRepository categoryRepository;
+    private final PlayerRepository playerRepository;
+    private final RecruitmentOpportunityRepository recruitmentOpportunityRepository;
+    private final EmailService emailService;
 
 
-    public List<Club> getAllClubs(){
+    public List<Club> getAllClubs() {
         return clubRepository.findAll();
     }
 
@@ -36,26 +41,26 @@ public class ClubService {
 //        clubRepository.save(club);
 //    }
 
-    public void addClub(ClubDTO clubDTO){
+    public void addClub(ClubDTO clubDTO) {
         Category category = categoryRepository.findCategoryById(clubDTO.getCategory_id());
-        if(category == null){
+        if (category == null) {
             throw new ApiException("Category not found");
         }
         Club existingClub = clubRepository.findClubByEmail(clubDTO.getEmail());
         if (existingClub != null) {
-            throw new ApiException("Club with this email: "+clubDTO.getEmail()+" already exist");
+            throw new ApiException("Club with this email: " + clubDTO.getEmail() + " already exist");
         }
-        Club club = new Club(null , clubDTO.getCr(),clubDTO.getName(),clubDTO.getEmail(),clubDTO.getPhoneNumber(),clubDTO.getLocation(),null,null,category);
+        Club club = new Club(null, clubDTO.getCr(), clubDTO.getName(), clubDTO.getEmail(), clubDTO.getPhoneNumber(), clubDTO.getLocation(), null, null, category);
         clubRepository.save(club);
     }
 
-    public void updateClub(Integer id ,Club club){
+    public void updateClub(Integer id, Club club) {
         Club oldClub = clubRepository.findClubById(id);
         Category category = categoryRepository.findCategoryById(club.getCategory().getId());
-        if(oldClub == null){
+        if (oldClub == null) {
             throw new ApiException("Club not found");
         }
-        if (category == null){
+        if (category == null) {
             throw new ApiException("Category not found");
         }
         oldClub.setName(club.getName());
@@ -66,9 +71,9 @@ public class ClubService {
         clubRepository.save(oldClub);
     }
 
-    public void deleteClub(Integer id){
+    public void deleteClub(Integer id) {
         Club club = clubRepository.findClubById(id);
-        if(club == null){
+        if (club == null) {
             throw new ApiException("Club not found");
         }
         clubRepository.delete(club);
@@ -76,9 +81,9 @@ public class ClubService {
 
     //EX
 
-    public Club getClubById(Integer id){
+    public Club getClubById(Integer id) {
         Club club = clubRepository.findClubById(id);
-        if(club == null){
+        if (club == null) {
             throw new ApiException("Club not found");
         }
         return club;
@@ -108,7 +113,7 @@ public class ClubService {
     // get club by Id dto
     public ClubOUTDTO getClubByIdDto(Integer id) {
         Club club = clubRepository.findClubById(id);
-        if(club == null){
+        if (club == null) {
             throw new ApiException("Club not found");
         }
         return convertToDTO(club);
@@ -138,5 +143,24 @@ public class ClubService {
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
+    }
+
+    public void sendQualifiedEmailToPlayer(Integer recruitmentOpportunity_id, Integer player_id,Integer club_id) {
+
+        RecruitmentOpportunity recruitmentOpportunity = recruitmentOpportunityRepository.findRecruitmentOpportunitiesByIdAndClub_Id(recruitmentOpportunity_id, club_id);
+        if (recruitmentOpportunity == null) {
+            throw new ApiException("Recruitment opportunity not found for this club");
+        }
+        Player player = playerRepository.findPlayerById(player_id);
+        if (player == null) {
+            throw new ApiException("Player not found");
+        }
+
+        Club club = clubRepository.findClubById(club_id);
+        if (club == null) {
+            throw new ApiException("Club not found");
+        }
+
+        emailService.qualifiedEmail(recruitmentOpportunity, player,club);
     }
 }

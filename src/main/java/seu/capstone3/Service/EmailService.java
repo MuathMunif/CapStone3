@@ -74,6 +74,22 @@ public class EmailService {
         mailSender.send(msg);
     }
 
+    public void qualifiedEmail(RecruitmentOpportunity recruitmentOpportunity, Player player,Club club) {
+        mailMessage.setFrom("alimuaffag@gmail.com");
+        mailMessage.setTo(player.getEmail());
+        mailMessage.setSubject( "You’re qualified for " + recruitmentOpportunity.getTitle());
+        String emailBody = "Dear " + player.getName() + ",\n\n"
+                + "Good news! You’re qualified for the " + recruitmentOpportunity.getTitle() + " role at " + club.getName() + ".\n\n"
+                + "Next step:\n"
+                + "- Find this opportunity in our page in the system." + "\n"
+                + "- Job ID: " + recruitmentOpportunity.getId() + "\n"
+                + "- If you’re interested, please submit your application there.\n\n"
+                + "Best regards,\n"
+                + club.getName() + " Talent Team";
+        mailMessage.setText(emailBody);
+        mailSender.send(mailMessage);
+    }
+
 
 
 }
