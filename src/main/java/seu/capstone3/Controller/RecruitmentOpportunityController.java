@@ -42,6 +42,7 @@ public class RecruitmentOpportunityController {
         return ResponseEntity.status(200).body(new ApiResponse("Successfully deleted"));
     }
 
+    //Ex
 
     @PutMapping("/accept-player-to-club/{recruitmentOpportunity_id}/{requestJoining_id}")
     public ResponseEntity<?> acceptPlayer(@PathVariable Integer recruitmentOpportunity_id, @PathVariable Integer requestJoining_id) {
@@ -77,6 +78,12 @@ public class RecruitmentOpportunityController {
     @GetMapping("/get-all-by-club-id/{id}")
     public ResponseEntity<?> getAllRecruitmentOpportunitiesByClubId(@PathVariable Integer id) {
         return ResponseEntity.status(200).body(recruitmentOpportunityService.getOpportunitiesByClubId(id));
+    }
+
+
+    @GetMapping("/get-opportunities-by-Category_id/{Category_id}")
+    public ResponseEntity<?> getOpportunitiesByCategoryId(@PathVariable Integer Category_id) {
+        return ResponseEntity.status(200).body(recruitmentOpportunityService.getOpportunitiesByCategoryId(Category_id));
     }
 
 }

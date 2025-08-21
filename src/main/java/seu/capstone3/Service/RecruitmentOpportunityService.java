@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
+import seu.capstone3.DTOOUT.PlayerAvailbleOpportunityDTO;
 import seu.capstone3.DTOOUT.RecruitmentOpportunityOUTDTO;
 import seu.capstone3.DTOOUT.RequestJoiningOUTDTO;
 import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
@@ -153,7 +154,6 @@ public class RecruitmentOpportunityService {
                     0
             );
         }
-
         // Always evaluate ALL applicants; category is handled in the prompt (mismatch gets lower score).
         List<Player> candidates = pending.stream()
                 .map(RequestJoining::getPlayer)
@@ -171,6 +171,8 @@ public class RecruitmentOpportunityService {
         dto.setClubName(opportunity.getClub() != null ? opportunity.getClub().getName() : null);
         dto.setDescription(opportunity.getDescription());
         dto.setStatus(opportunity.getStatus());
+        dto.setTitle(opportunity.getTitle());
+
 
         if (opportunity.getRequestJoinings() != null) {
             dto.setRequests(
@@ -208,4 +210,18 @@ public class RecruitmentOpportunityService {
     }
 
 
+    // find Recruitment Opportunities by category Id
+    public List<PlayerAvailbleOpportunityDTO> getOpportunitiesByCategoryId(Integer categoryId) {
+        List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findRecruitmentOpportunitiesByClub_CategoryId(categoryId);
+        if (opportunities.isEmpty()) {
+            throw new ApiException("No opportunities found for this category");
+        }
+        return opportunities.stream()
+                .map(o -> new PlayerAvailbleOpportunityDTO(
+                        o.getClub().getName()
+                        ,o.getTitle()
+                        ,o.getDescription()
+                        ,o.getStatus()))
+                .toList();
+    }
 }

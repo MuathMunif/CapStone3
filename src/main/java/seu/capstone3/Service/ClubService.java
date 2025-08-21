@@ -32,15 +32,6 @@ public class ClubService {
     }
 
 
-//    public void addClub(Club club){
-//        Category category = categoryRepository.findCategoryById(club.getCategory().getId());
-//        if (category == null){
-//            throw new ApiException("Category not found");
-//        }
-//        club.setCategory(category);
-//        clubRepository.save(club);
-//    }
-
     public void addClub(ClubDTO clubDTO) {
         Category category = categoryRepository.findCategoryById(clubDTO.getCategory_id());
         if (category == null) {

@@ -25,13 +25,6 @@ public class TournamentController {
         return ResponseEntity.status(200).body(tournamentService.getAllTournaments());
     }
 
-    @GetMapping("/get-tournamentsOutDTO")
-    public ResponseEntity<?> getAllTournamentsOutDTO(){
-        return ResponseEntity.status(200).body(tournamentService.getAllTournamentsOutDTO());
-    }
-
-
-
     @PostMapping("/add")
     public ResponseEntity<?> addTournament(@Valid @RequestBody TournamentDTO tournamentDTO){
         tournamentService.addTournament(tournamentDTO);
@@ -53,6 +46,11 @@ public class TournamentController {
     }
 
     //EX
+
+    @GetMapping("/get-tournamentsOutDTO")
+    public ResponseEntity<?> getAllTournamentsOutDTO(){
+        return ResponseEntity.status(200).body(tournamentService.getAllTournamentsOutDTO());
+    }
 
     @PutMapping("/assign-player-to-tournament/{tournamentId}/{playerId}")
     public ResponseEntity<?> assignPlayerToTournament(@PathVariable Integer tournamentId , @PathVariable Integer playerId){
