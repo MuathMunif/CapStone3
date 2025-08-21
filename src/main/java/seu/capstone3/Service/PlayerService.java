@@ -75,6 +75,7 @@ public class PlayerService {
         player1.setWeight(player.getWeight());
         player1.setDescription(player.getDescription());
         player1.setSkills(player.getSkills());
+        player1.setCategory(player.getCategory());
         playerRepository.save(player1);
     }
 

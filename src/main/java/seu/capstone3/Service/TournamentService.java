@@ -28,41 +28,6 @@ public class TournamentService {
         return tournamentRepository.findAll();
     }
 
-    private void validatePlayersAndTeams(int numberOfPlayers, int numberOfTeams){
-        if(numberOfPlayers % 2 != 0){
-            throw new ApiException("Number of players must be even");
-        }
-        if(numberOfTeams <= 0){
-            throw new ApiException("Number of teams must be at least 1");
-        }
-        if(numberOfTeams > numberOfPlayers){
-            throw new ApiException("Number of teams cannot be greater than number of players");
-        }
-        if(numberOfPlayers % numberOfTeams != 0){
-            throw new ApiException("Number of players must be divisible by number of teams");
-        }
-    }
-
-
-
-   public List<TournamentOutDTO> getAllTournamentsOutDTO(){
-        List<Tournament> tournaments = tournamentRepository.findAll();
-        List<TournamentOutDTO> tournamentOutDTOS = new ArrayList<>();
-
-        for(Tournament t: tournaments){
-            TournamentOutDTO tournamentOutDTO = new TournamentOutDTO();
-            tournamentOutDTO.setName(t.getName());
-            tournamentOutDTO.setStartDate(t.getStartDate());
-            tournamentOutDTO.setEndDate(t.getEndDate());
-            tournamentOutDTO.setLocation(t.getLocation());
-            tournamentOutDTO.setCategoryName(t.getCategory().getName());
-            tournamentOutDTO.setStatus(t.getStatus());
-
-            tournamentOutDTOS.add(tournamentOutDTO);
-        }
-        return tournamentOutDTOS;
-   }
-
 
     public void addTournament(TournamentDTO tournamentDTO){
 
@@ -110,6 +75,9 @@ public class TournamentService {
         oldTournament.setStartDate(tournament.getStartDate());
         oldTournament.setEndDate(tournament.getEndDate());
         oldTournament.setNumberOfTeams(tournament.getNumberOfTeams());
+        oldTournament.setStatus(oldTournament.getStatus());
+        oldTournament.setCategory(oldTournament.getCategory());
+        oldTournament.setSponsor(oldTournament.getSponsor());
         tournamentRepository.save(oldTournament);
     }
 
@@ -125,6 +93,41 @@ public class TournamentService {
     }
 
     // EX
+
+
+    public List<TournamentOutDTO> getAllTournamentsOutDTO(){
+        List<Tournament> tournaments = tournamentRepository.findAll();
+        List<TournamentOutDTO> tournamentOutDTOS = new ArrayList<>();
+
+        for(Tournament t: tournaments){
+            TournamentOutDTO tournamentOutDTO = new TournamentOutDTO();
+            tournamentOutDTO.setName(t.getName());
+            tournamentOutDTO.setStartDate(t.getStartDate());
+            tournamentOutDTO.setEndDate(t.getEndDate());
+            tournamentOutDTO.setLocation(t.getLocation());
+            tournamentOutDTO.setCategoryName(t.getCategory().getName());
+            tournamentOutDTO.setStatus(t.getStatus());
+
+            tournamentOutDTOS.add(tournamentOutDTO);
+        }
+        return tournamentOutDTOS;
+    }
+
+
+    private void validatePlayersAndTeams(int numberOfPlayers, int numberOfTeams){
+        if(numberOfPlayers % 2 != 0){
+            throw new ApiException("Number of players must be even");
+        }
+        if(numberOfTeams <= 0){
+            throw new ApiException("Number of teams must be at least 1");
+        }
+        if(numberOfTeams > numberOfPlayers){
+            throw new ApiException("Number of teams cannot be greater than number of players");
+        }
+        if(numberOfPlayers % numberOfTeams != 0){
+            throw new ApiException("Number of players must be divisible by number of teams");
+        }
+    }
 
     public void assignPlayerToTournament(Integer tournamentId, Integer playerId) {
         Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
@@ -321,7 +324,6 @@ public class TournamentService {
         if (tournament == null || player == null) {
             throw new ApiException("Tournament or player not found");
         }
-
 
         if (!tournament.getPlayers().contains(player)) {
             throw new ApiException("Player is not registered in this tournament");
