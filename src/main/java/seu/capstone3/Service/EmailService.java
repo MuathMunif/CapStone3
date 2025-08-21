@@ -6,6 +6,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Model.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -13,14 +16,6 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-    public void sendTextEmail(String to, String subject, String body) {
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom("alimuaffag@gmail.com"); // لازم نفس البريد اللي بالـ properties
-        msg.setTo(to);
-        msg.setSubject(subject);
-        msg.setText(body);
-        mailSender.send(msg);
-    }
 
     public void sendAcceptedEmail(Player player, Club club) {
         mailMessage.setFrom("alimuaffag@gmail.com");
@@ -87,6 +82,26 @@ public class EmailService {
         mailMessage.setText(emailBody);
         mailSender.send(mailMessage);
     }
+
+    public void updateTournamentDate(Tournament tournament, Sponsor sponsor, List<Player> players) {
+        for (Player player : players) {
+            if (player.getEmail() != null) {
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setFrom("alimuaffag@gmail.com");
+                mailMessage.setTo(player.getEmail());
+                mailMessage.setSubject("Postponement of " + tournament.getName());
+                mailMessage.setText("Dear " + player.getName() + ",\n\n"
+                        + "We would like to inform you that the " + tournament.getName()
+                        + " has been postponed. The new date for the tournament is from "
+                        + tournament.getStartDate() + " to " + tournament.getEndDate() + ".\n\n"
+                        + "We appreciate your understanding and look forward to seeing you at the tournament.\n\n"
+                        + "Best regards,\n" + sponsor.getName());
+
+                mailSender.send(mailMessage);
+            }
+        }
+    }
+
 
 
 

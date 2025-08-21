@@ -404,6 +404,7 @@ public class TournamentService {
     public void rescheduleTournaments(Integer sponsorId, Integer tournamentId , TournamentRescheduleDTOIn tournamentRescheduleDTOIn){
         Sponsor sponsor = sponsorRepository.findSponsorById(sponsorId);
         Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
+        List<Player> players =playerRepository.findAll();
         if (sponsor == null || tournament == null) {
             throw new ApiException("Tournament or sponsor not found");
         }
@@ -416,6 +417,7 @@ public class TournamentService {
         }
         tournament.setStartDate(tournamentRescheduleDTOIn.getStartDate());
         tournament.setEndDate(tournamentRescheduleDTOIn.getEndDate());
+        emailService.updateTournamentDate(tournament,sponsor,players);
         tournamentRepository.save(tournament);
     }
 }
