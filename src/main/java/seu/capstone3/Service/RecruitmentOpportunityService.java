@@ -210,9 +210,9 @@ public class RecruitmentOpportunityService {
     }
 
 
-    // find Recruitment Opportunities by category Id
+    // find Open Recruitment Opportunities by category Id
     public List<PlayerAvailbleOpportunityDTO> getOpportunitiesByCategoryId(Integer categoryId) {
-        List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findRecruitmentOpportunitiesByClub_CategoryId(categoryId);
+        List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findRecruitmentOpportunitiesByStatusAndClub_CategoryId("OPEN",categoryId);
         if (opportunities.isEmpty()) {
             throw new ApiException("No opportunities found for this category");
         }
