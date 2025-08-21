@@ -25,4 +25,9 @@ public class RequestJoiningController {
         return ResponseEntity.status(200).body(new ApiResponse("Request joined successfully"));
     }
 
+    @GetMapping("/player-request{player_id}")
+    public ResponseEntity<?> getPlayerRequestJoining(@PathVariable Integer player_id) {
+        return ResponseEntity.status(200).body(requestJoiningService.playerApplayedRequestJoining(player_id));
+    }
+
 }

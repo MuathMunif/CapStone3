@@ -11,4 +11,6 @@ public interface RequestJoiningRepository extends JpaRepository<RequestJoining, 
     RequestJoining findRequestJoiningById(Integer id);
 
     List<RequestJoining> findAllByRecruitmentOpportunity_IdAndStatusIgnoreCase(Integer opportunityId, String status);
+
+    List<RequestJoining> findAllRequestJoiningByPlayer_Id(Integer playerId);
 }
