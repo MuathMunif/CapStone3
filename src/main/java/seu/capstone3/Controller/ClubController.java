@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
-import seu.capstone3.DTOIN.ClubDTO;
+import seu.capstone3.DTOIN.ClubDTOIn;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Service.ClubService;
 
@@ -21,34 +21,34 @@ public class ClubController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addClub(@Valid @RequestBody ClubDTO clubDTO) {
-        clubService.addClub(clubDTO);
+    public ResponseEntity<?> addClub(@Valid @RequestBody ClubDTOIn clubDTOIn) {
+        clubService.addClub(clubDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Club added successfully"));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateClub(@PathVariable Integer id,@Valid @RequestBody Club club) {
-        clubService.updateClub(id, club);
+    @PutMapping("/update/{club_id}")
+    public ResponseEntity<?> updateClub(@PathVariable Integer club_id,@Valid @RequestBody Club club) {
+        clubService.updateClub(club_id, club);
         return ResponseEntity.status(200).body(new ApiResponse("Club updated successfully"));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteClub(@PathVariable Integer id) {
-        clubService.deleteClub(id);
+    @DeleteMapping("/delete/{club_id}")
+    public ResponseEntity<?> deleteClub(@PathVariable Integer club_id) {
+        clubService.deleteClub(club_id);
         return ResponseEntity.status(200).body(new ApiResponse("Club deleted successfully"));
     }
 
     //Ex
 
-    @GetMapping("/get-club-by-id/{id}")
-    public ResponseEntity<?> getClubById(@PathVariable Integer id) {
-        return ResponseEntity.status(200).body(clubService.getClubById(id));
+    @GetMapping("/get-club-by-id/{club_id}")
+    public ResponseEntity<?> getClubById(@PathVariable Integer club_id) {
+        return ResponseEntity.status(200).body(clubService.getClubById(club_id));
     }
 
     // dto
-    @GetMapping("/get-club-by-id-dto/{id}")
-    public ResponseEntity<?> getClubByIdDto(@PathVariable Integer id){
-        return ResponseEntity.status(200).body(clubService.getClubByIdDto(id));
+    @GetMapping("/get-club-by-id-dto/{club_id}")
+    public ResponseEntity<?> getClubByIdDto(@PathVariable Integer club_id){
+        return ResponseEntity.status(200).body(clubService.getClubByIdDto(club_id));
     }
 
 

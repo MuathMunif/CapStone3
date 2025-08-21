@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @AllArgsConstructor @NoArgsConstructor
-public class PlayerPickDTO {
+public class PlayerPickDTOOut {
     private Integer playerId;
     private String playerName;
     private Double score;   // 0..100 (nullable if fallback)

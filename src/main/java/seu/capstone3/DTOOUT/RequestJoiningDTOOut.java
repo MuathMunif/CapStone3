@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlayerAvailbleOpportunityDTO {
+public class RequestJoiningDTOOut {
 
-    private String clubName;
-    private String title;
-    private String description;
+    private Integer requestId;
+    private String playerName;
     private String status;
+
 }

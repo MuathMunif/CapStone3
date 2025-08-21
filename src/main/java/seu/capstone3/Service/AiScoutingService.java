@@ -12,10 +12,10 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.openai.OpenAiChatOptions;
 
 import seu.capstone3.Api.ApiException;
-import seu.capstone3.DTOOUT.PlayerPickDTO;
-import seu.capstone3.DTOOUT.PlayerSWAnalysisDTO;
-import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
-import seu.capstone3.DTOOUT.TrainingPlanSimpleDTO;
+import seu.capstone3.DTOOUT.PlayerPickDTOOut;
+import seu.capstone3.DTOOUT.PlayerSWAnalysisDTOOut;
+import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTOOut;
+import seu.capstone3.DTOOUT.TrainingPlanSimpleDTOOut;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
 
@@ -47,9 +47,9 @@ public class AiScoutingService {
     }
 
     /** Always return players if there are applicants. Keep it simple but informative. */
-    public SimpleRecommendationResponseDTO recommend(RecruitmentOpportunity opp, List<Player> candidates) {
+    public SimpleRecommendationResponseDTOOut recommend(RecruitmentOpportunity opp, List<Player> candidates) {
         if (candidates == null || candidates.isEmpty()) {
-            return new SimpleRecommendationResponseDTO(
+            return new SimpleRecommendationResponseDTOOut(
                     "No applicants yet.",
                     List.of(),
                     List.of(),
@@ -83,15 +83,15 @@ public class AiScoutingService {
 
         // Expected JSON:
         // { "ranking": [ {playerId, playerName, score, reason}, ... ] }
-        List<PlayerPickDTO> ranking = parseRanking(jsonOnly);
+        List<PlayerPickDTOOut> ranking = parseRanking(jsonOnly);
         if (ranking.isEmpty()) {
             return fallbackListing("No clear ranking from AI. Showing applicants as tentative.", candidates);
         }
 
         // Bucket into suggested vs alternatives (but DO NOT expose noneStrong flag)
-        List<PlayerPickDTO> suggested = ranking.stream()
+        List<PlayerPickDTOOut> suggested = ranking.stream()
                 .filter(p -> p.getScore() != null && p.getScore() >= minScore)
-                .sorted(Comparator.comparing(PlayerPickDTO::getScore).reversed())
+                .sorted(Comparator.comparing(PlayerPickDTOOut::getScore).reversed())
                 .limit(maxSuggested)
                 .collect(Collectors.toList());
 
@@ -100,10 +100,10 @@ public class AiScoutingService {
 
         Set<Integer> usedIds = suggested.stream()
                 .filter(p -> p.getPlayerId() != null)
-                .map(PlayerPickDTO::getPlayerId)
+                .map(PlayerPickDTOOut::getPlayerId)
                 .collect(Collectors.toSet());
 
-        List<PlayerPickDTO> alternatives = ranking.stream()
+        List<PlayerPickDTOOut> alternatives = ranking.stream()
                 .filter(p -> p.getPlayerId() != null && !usedIds.contains(p.getPlayerId()))
                 .limit(maxAlternatives)
                 .collect(Collectors.toList());
@@ -127,7 +127,7 @@ public class AiScoutingService {
             message = "No suitable candidate; showing tentative picks.";
         }
 
-        return new SimpleRecommendationResponseDTO(
+        return new SimpleRecommendationResponseDTOOut(
                 message,
                 suggested,
                 alternatives,
@@ -205,12 +205,12 @@ public class AiScoutingService {
         """.formatted(oppBlock, playersBlock, oppCategory, minScore);
     }
 
-    private List<PlayerPickDTO> parseRanking(String json) {
+    private List<PlayerPickDTOOut> parseRanking(String json) {
         try {
             JsonNode root = mapper.readTree(json);
             if (!root.has("ranking") || !root.get("ranking").isArray()) return List.of();
-            List<PlayerPickDTO> picks = mapper.convertValue(root.get("ranking"),
-                    new TypeReference<List<PlayerPickDTO>>() {});
+            List<PlayerPickDTOOut> picks = mapper.convertValue(root.get("ranking"),
+                    new TypeReference<List<PlayerPickDTOOut>>() {});
             return picks.stream().map(p -> {
                 if (p.getReason() != null && p.getReason().length() > 160) {
                     p.setReason(p.getReason().substring(0, 160).trim());
@@ -223,15 +223,15 @@ public class AiScoutingService {
         }
     }
 
-    private SimpleRecommendationResponseDTO fallbackListing(String msg, List<Player> candidates) {
-        List<PlayerPickDTO> all = candidates.stream()
-                .map(p -> new PlayerPickDTO(p.getId(), p.getName(), null, "Provisional."))
+    private SimpleRecommendationResponseDTOOut fallbackListing(String msg, List<Player> candidates) {
+        List<PlayerPickDTOOut> all = candidates.stream()
+                .map(p -> new PlayerPickDTOOut(p.getId(), p.getName(), null, "Provisional."))
                 .collect(Collectors.toList());
 
-        List<PlayerPickDTO> suggested = all.isEmpty() ? List.of() : List.of(all.get(0));
-        List<PlayerPickDTO> alternatives = all.stream().skip(1).limit(maxAlternatives).collect(Collectors.toList());
+        List<PlayerPickDTOOut> suggested = all.isEmpty() ? List.of() : List.of(all.get(0));
+        List<PlayerPickDTOOut> alternatives = all.stream().skip(1).limit(maxAlternatives).collect(Collectors.toList());
 
-        return new SimpleRecommendationResponseDTO(
+        return new SimpleRecommendationResponseDTOOut(
                 msg,
                 suggested,
                 alternatives,
@@ -284,7 +284,7 @@ public class AiScoutingService {
     private double nd(Double d){ return d==null? 0.0: d; }
 
 
-    public PlayerSWAnalysisDTO analyzePlayerStrengthsWeaknesses(Player player) {
+    public PlayerSWAnalysisDTOOut analyzePlayerStrengthsWeaknesses(Player player) {
         try {
             String prompt = """
                 You are a professional football scout and analyst. 
@@ -328,7 +328,7 @@ public class AiScoutingService {
 
             JsonNode json = mapper.readTree(raw);
 
-            PlayerSWAnalysisDTO dto = new PlayerSWAnalysisDTO();
+            PlayerSWAnalysisDTOOut dto = new PlayerSWAnalysisDTOOut();
             dto.setPlayerId(player.getId());
             dto.setPlayerName(player.getName());
             dto.setSummary(json.path("summary").asText(null));
@@ -351,7 +351,7 @@ public class AiScoutingService {
 
         } catch (Exception e) {
             log.error("AI analysis failed", e);
-            return new PlayerSWAnalysisDTO(
+            return new PlayerSWAnalysisDTOOut(
                     player.getId(),
                     player.getName(),
                     List.of("Shows tactical discipline"),
@@ -365,7 +365,7 @@ public class AiScoutingService {
 
 
     // AiScoutingService.java
-    public TrainingPlanSimpleDTO generateAutoTrainingPlan(Player player, int days) {
+    public TrainingPlanSimpleDTOOut generateAutoTrainingPlan(Player player, int days) {
         String sport = extractSport(player); // يقرأ category فقط
 
         String prompt = """
@@ -406,7 +406,7 @@ public class AiScoutingService {
             String raw = chatClient.prompt(prompt).options(opts).call().content();
             JsonNode json = parseJsonLenient(raw); // ينظف أي code fences ويقرأ JSON
 
-            TrainingPlanSimpleDTO dto = mapPlanJson(player, json, sport, days);
+            TrainingPlanSimpleDTOOut dto = mapPlanJson(player, json, sport, days);
             if (dto.getPlan() == null || dto.getPlan().isEmpty()) {
                 throw new IllegalStateException("Empty AI plan");
             }
@@ -427,18 +427,18 @@ public class AiScoutingService {
         return mapper.readTree(s);
     }
 
-    private TrainingPlanSimpleDTO mapPlanJson(Player player, JsonNode json, String sport, int days) {
-        TrainingPlanSimpleDTO dto = new TrainingPlanSimpleDTO();
+    private TrainingPlanSimpleDTOOut mapPlanJson(Player player, JsonNode json, String sport, int days) {
+        TrainingPlanSimpleDTOOut dto = new TrainingPlanSimpleDTOOut();
         dto.setPlayerId(player.getId());
         dto.setPlayerName(player.getName());
         dto.setSport(json.path("sport").asText(sport));
         dto.setDays(json.path("days").asInt(days));
         dto.setFocus(json.path("focus").asText("balanced"));
-        List<TrainingPlanSimpleDTO.Day> out = new ArrayList<>();
+        List<TrainingPlanSimpleDTOOut.Day> out = new ArrayList<>();
         JsonNode arr = json.path("plan");
         if (arr != null && arr.isArray()) {
             for (JsonNode n : arr) {
-                TrainingPlanSimpleDTO.Day d = new TrainingPlanSimpleDTO.Day();
+                TrainingPlanSimpleDTOOut.Day d = new TrainingPlanSimpleDTOOut.Day();
                 d.setDay(n.path("day").asInt(out.size() + 1));
                 d.setTitle(n.path("title").asText("Session"));
                 d.setWorkout(n.path("workout").asText("Sport-specific drills 30–40 min"));
@@ -450,10 +450,10 @@ public class AiScoutingService {
         return dto;
     }
 
-    private void ensureLength(List<TrainingPlanSimpleDTO.Day> plan, int days) {
+    private void ensureLength(List<TrainingPlanSimpleDTOOut.Day> plan, int days) {
         if (plan == null) return;
         while (plan.size() > days) plan.remove(plan.size() - 1);
-        while (plan.size() < days) plan.add(new TrainingPlanSimpleDTO.Day(plan.size() + 1, "Rest", "Walk 20 min + stretch", "Hydrate"));
+        while (plan.size() < days) plan.add(new TrainingPlanSimpleDTOOut.Day(plan.size() + 1, "Rest", "Walk 20 min + stretch", "Hydrate"));
         for (int i = 0; i < plan.size(); i++) plan.get(i).setDay(i + 1);
     }
 

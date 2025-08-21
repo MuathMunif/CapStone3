@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Setter
 @Getter
 @NoArgsConstructor
-public class TournamentOutDTO {
+public class TournamentDTOOut {
 
     private String name;
     private LocalDate startDate;
@@ -18,7 +18,7 @@ public class TournamentOutDTO {
     private String categoryName;
     private String status;
 
-    public TournamentOutDTO(String name, LocalDate startDate, LocalDate endDate,
+    public TournamentDTOOut(String name, LocalDate startDate, LocalDate endDate,
                             String location, String categoryName, String status){
         this.name = name;
         this.startDate = startDate;

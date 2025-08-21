@@ -3,8 +3,8 @@ package seu.capstone3.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
-import seu.capstone3.DTOIN.ClubDTO;
-import seu.capstone3.DTOOUT.ClubOUTDTO;
+import seu.capstone3.DTOIN.ClubDTOIn;
+import seu.capstone3.DTOOUT.ClubDTOOut;
 import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.Player;
@@ -32,16 +32,16 @@ public class ClubService {
     }
 
 
-    public void addClub(ClubDTO clubDTO) {
-        Category category = categoryRepository.findCategoryById(clubDTO.getCategory_id());
+    public void addClub(ClubDTOIn clubDTOIn) {
+        Category category = categoryRepository.findCategoryById(clubDTOIn.getCategory_id());
         if (category == null) {
             throw new ApiException("Category not found");
         }
-        Club existingClub = clubRepository.findClubByEmail(clubDTO.getEmail());
+        Club existingClub = clubRepository.findClubByEmail(clubDTOIn.getEmail());
         if (existingClub != null) {
-            throw new ApiException("Club with this email: " + clubDTO.getEmail() + " already exist");
+            throw new ApiException("Club with this email: " + clubDTOIn.getEmail() + " already exist");
         }
-        Club club = new Club(null, clubDTO.getCr(), clubDTO.getName(), clubDTO.getEmail(), clubDTO.getPhoneNumber(), clubDTO.getLocation(), null, null, category);
+        Club club = new Club(null, clubDTOIn.getCr(), clubDTOIn.getName(), clubDTOIn.getEmail(), clubDTOIn.getPhoneNumber(), clubDTOIn.getLocation(), null, null, category);
         clubRepository.save(club);
     }
 
@@ -82,8 +82,8 @@ public class ClubService {
 
 
     // this method to convert to dto
-    public ClubOUTDTO convertToDTO(Club club) {
-        ClubOUTDTO dto = new ClubOUTDTO();
+    public ClubDTOOut convertToDTO(Club club) {
+        ClubDTOOut dto = new ClubDTOOut();
         dto.setName(club.getName());
         dto.setEmail(club.getEmail());
         dto.setPhoneNumber(club.getPhoneNumber());
@@ -102,7 +102,7 @@ public class ClubService {
     }
 
     // get club by Id dto
-    public ClubOUTDTO getClubByIdDto(Integer id) {
+    public ClubDTOOut getClubByIdDto(Integer id) {
         Club club = clubRepository.findClubById(id);
         if (club == null) {
             throw new ApiException("Club not found");
@@ -112,7 +112,7 @@ public class ClubService {
 
 
     // get all club dto
-    public List<ClubOUTDTO> getAllClubsDto() {
+    public List<ClubDTOOut> getAllClubsDto() {
         return clubRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
@@ -121,7 +121,7 @@ public class ClubService {
 
 
     // get all club by location 'DTO'
-    public List<ClubOUTDTO> getClubsByLocation(String location) {
+    public List<ClubDTOOut> getClubsByLocation(String location) {
         return clubRepository.findByLocationIgnoreCase(location)
                 .stream()
                 .map(this::convertToDTO)
@@ -129,7 +129,7 @@ public class ClubService {
     }
 
 
-    public List<ClubOUTDTO> getClubsByCategory(Integer categoryId) {
+    public List<ClubDTOOut> getClubsByCategory(Integer categoryId) {
         return clubRepository.findByCategoryId(categoryId)
                 .stream()
                 .map(this::convertToDTO)

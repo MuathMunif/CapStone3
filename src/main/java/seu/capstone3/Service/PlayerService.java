@@ -4,16 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import seu.capstone3.Api.ApiException;
-import seu.capstone3.DTOIN.PlayerDTO;
-import seu.capstone3.DTOOUT.PlayerOUTDTO;
-import seu.capstone3.DTOOUT.PlayerSWAnalysisDTO;
-import seu.capstone3.DTOOUT.TrainingPlanSimpleDTO;
+import seu.capstone3.DTOIN.PlayerDTOIn;
+import seu.capstone3.DTOOUT.PlayerDTOOut;
+import seu.capstone3.DTOOUT.PlayerSWAnalysisDTOOut;
+import seu.capstone3.DTOOUT.TrainingPlanSimpleDTOOut;
 import seu.capstone3.Model.Category;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Repository.CategoryRepository;
 import seu.capstone3.Repository.PlayerRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,27 +29,27 @@ public class PlayerService {
     }
 
 
-    public void addPlayer(PlayerDTO playerDTO) {
-        Category category = categoryRepository.findCategoryById(playerDTO.getCategory_id());
+    public void addPlayer(PlayerDTOIn playerDTOIn) {
+        Category category = categoryRepository.findCategoryById(playerDTOIn.getCategory_id());
         if(category == null) {
             throw new ApiException("Category not found");
         }
 
-        Player existingPlayer = playerRepository.findPlayerByEmail(playerDTO.getEmail());
+        Player existingPlayer = playerRepository.findPlayerByEmail(playerDTOIn.getEmail());
         if (existingPlayer != null) {
-            throw new ApiException("Player with this email: "+playerDTO.getEmail()+" already exists");
+            throw new ApiException("Player with this email: "+ playerDTOIn.getEmail()+" already exists");
         }
 
         Player player = new Player(null,
-                playerDTO.getName(),
-                playerDTO.getEmail(),
-                playerDTO.getPhoneNumber(),
-                playerDTO.getAge(),
-                playerDTO.getLocation(),
-                playerDTO.getHeight(),
-                playerDTO.getWeight(),
-                playerDTO.getDescription(),
-                playerDTO.getSkills(),
+                playerDTOIn.getName(),
+                playerDTOIn.getEmail(),
+                playerDTOIn.getPhoneNumber(),
+                playerDTOIn.getAge(),
+                playerDTOIn.getLocation(),
+                playerDTOIn.getHeight(),
+                playerDTOIn.getWeight(),
+                playerDTOIn.getDescription(),
+                playerDTOIn.getSkills(),
                 null,
                 null,
                 null,
@@ -110,8 +109,8 @@ public class PlayerService {
 
 
     // this to convert player to dto
-    public PlayerOUTDTO convertToDTO(Player player) {
-        PlayerOUTDTO dto = new PlayerOUTDTO();
+    public PlayerDTOOut convertToDTO(Player player) {
+        PlayerDTOOut dto = new PlayerDTOOut();
         dto.setName(player.getName());
         dto.setEmail(player.getEmail());
         dto.setPhoneNumber(player.getPhoneNumber());
@@ -131,12 +130,12 @@ public class PlayerService {
 
 
     // get player by ID with CV
-    public PlayerOUTDTO getPlayerWithCv(Integer id) throws Exception {
+    public PlayerDTOOut getPlayerWithCv(Integer id) throws Exception {
         Player player = playerRepository.findPlayerById(id);
         if (player == null) {
             throw new ApiException("Player not found");
         }
-        PlayerOUTDTO dto = convertToDTO(player);
+        PlayerDTOOut dto = convertToDTO(player);
 
         if (player.getCvUrl() != null) {
             String presignedUrl = minioService.getPresignedUrl(player.getCvUrl());
@@ -148,7 +147,7 @@ public class PlayerService {
 
 
     // get all players with dto
-    public List<PlayerOUTDTO> getAllPlayersDto() {
+    public List<PlayerDTOOut> getAllPlayersDto() {
         return playerRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
@@ -157,7 +156,7 @@ public class PlayerService {
 
 
     //get all players without club
-    public List<PlayerOUTDTO> getPlayersWithoutClub() {
+    public List<PlayerDTOOut> getPlayersWithoutClub() {
         return playerRepository.getPlayersWithoutClub()
                 .stream()
                 .map(this::convertToDTO)
@@ -169,12 +168,12 @@ public class PlayerService {
                 .orElseThrow(() -> new RuntimeException("Player not found"));
     }
 
-    public PlayerSWAnalysisDTO analyzePlayerStrengthsWeaknesses(Integer player_id) {
+    public PlayerSWAnalysisDTOOut analyzePlayerStrengthsWeaknesses(Integer player_id) {
         Player player = getPlayerById(player_id);
         return aiScoutingService.analyzePlayerStrengthsWeaknesses(player);
     }
 
-    public TrainingPlanSimpleDTO getTrainingPlanSimpleDto(Integer player_id,Integer days) {
+    public TrainingPlanSimpleDTOOut getTrainingPlanSimpleDto(Integer player_id, Integer days) {
         Player player = getPlayerById(player_id);
         return aiScoutingService.generateAutoTrainingPlan(player,days);
     }

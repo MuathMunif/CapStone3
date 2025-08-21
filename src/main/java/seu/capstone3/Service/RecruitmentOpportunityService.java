@@ -3,11 +3,11 @@ package seu.capstone3.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
-import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
-import seu.capstone3.DTOOUT.PlayerAvailbleOpportunityDTO;
-import seu.capstone3.DTOOUT.RecruitmentOpportunityOUTDTO;
-import seu.capstone3.DTOOUT.RequestJoiningOUTDTO;
-import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTO;
+import seu.capstone3.DTOIN.RecruitmentOpportunityDTOIn;
+import seu.capstone3.DTOOUT.PlayerAvailableOpportunityDTOOut;
+import seu.capstone3.DTOOUT.RecruitmentOpportunityDTOOut;
+import seu.capstone3.DTOOUT.RequestJoiningDTOOut;
+import seu.capstone3.DTOOUT.SimpleRecommendationResponseDTOOut;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
@@ -47,12 +47,12 @@ public class RecruitmentOpportunityService {
 //        recruitmentOpportunityRepository.save(recruitmentOpportunity);
 //    }
 
-    public void addRecruitmentOpportunity(RecruitmentOpportunityDTO recruitmentOpportunityDTO) {
-        Club club = clubRepository.findClubById(recruitmentOpportunityDTO.getClub_id());
+    public void addRecruitmentOpportunity(RecruitmentOpportunityDTOIn recruitmentOpportunityDTOIn) {
+        Club club = clubRepository.findClubById(recruitmentOpportunityDTOIn.getClub_id());
         if (club == null) {
             throw new ApiException("Club not found");
         }
-        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null,recruitmentOpportunityDTO.getTitle(), recruitmentOpportunityDTO.getDescription() ,"OPEN", club ,null);
+        RecruitmentOpportunity recruitmentOpportunity = new RecruitmentOpportunity(null, recruitmentOpportunityDTOIn.getTitle(), recruitmentOpportunityDTOIn.getDescription() ,"OPEN", club ,null);
         recruitmentOpportunity.setStatus("OPEN");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
@@ -136,7 +136,7 @@ public class RecruitmentOpportunityService {
         recruitmentOpportunity.setStatus("CLOSED");
         recruitmentOpportunityRepository.save(recruitmentOpportunity);
     }
-    public SimpleRecommendationResponseDTO getAiRecommendations(Integer opportunityId) {
+    public SimpleRecommendationResponseDTOOut getAiRecommendations(Integer opportunityId) {
         RecruitmentOpportunity opp =
                 recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(opportunityId);
 
@@ -147,7 +147,7 @@ public class RecruitmentOpportunityService {
                         opportunityId, "PENDING");
 
         if (pending == null || pending.isEmpty()) {
-            return new SimpleRecommendationResponseDTO(
+            return new SimpleRecommendationResponseDTOOut(
                     "No applicants yet.",
                     List.of(),
                     List.of(),
@@ -166,8 +166,8 @@ public class RecruitmentOpportunityService {
 
 
     // this method to convert to dto
-    public RecruitmentOpportunityOUTDTO convertToDTO(RecruitmentOpportunity opportunity) {
-        RecruitmentOpportunityOUTDTO dto = new RecruitmentOpportunityOUTDTO();
+    public RecruitmentOpportunityDTOOut convertToDTO(RecruitmentOpportunity opportunity) {
+        RecruitmentOpportunityDTOOut dto = new RecruitmentOpportunityDTOOut();
         dto.setClubName(opportunity.getClub() != null ? opportunity.getClub().getName() : null);
         dto.setDescription(opportunity.getDescription());
         dto.setStatus(opportunity.getStatus());
@@ -177,7 +177,7 @@ public class RecruitmentOpportunityService {
         if (opportunity.getRequestJoinings() != null) {
             dto.setRequests(
                     opportunity.getRequestJoinings().stream()
-                            .map(req -> new RequestJoiningOUTDTO(
+                            .map(req -> new RequestJoiningDTOOut(
                                     req.getId(),
                                     req.getPlayer().getName(),
                                     req.getStatus()
@@ -190,7 +190,7 @@ public class RecruitmentOpportunityService {
 
 
     // get all Recruitment Opportunities with dto
-    public List<RecruitmentOpportunityOUTDTO> getAllRecruitmentOpportunitiesDto() {
+    public List<RecruitmentOpportunityDTOOut> getAllRecruitmentOpportunitiesDto() {
         List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findAll();
         return opportunities.stream()
                 .map(this::convertToDTO)
@@ -199,7 +199,7 @@ public class RecruitmentOpportunityService {
 
 
     // get all Recruitment Opportunities for one club
-    public List<RecruitmentOpportunityOUTDTO> getOpportunitiesByClubId(Integer clubId) {
+    public List<RecruitmentOpportunityDTOOut> getOpportunitiesByClubId(Integer clubId) {
         List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findByClub_Id(clubId);
         if (opportunities.isEmpty()) {
             throw new ApiException("No opportunities found for this club");
@@ -211,13 +211,13 @@ public class RecruitmentOpportunityService {
 
 
     // find Open Recruitment Opportunities by category Id
-    public List<PlayerAvailbleOpportunityDTO> getOpportunitiesByCategoryId(Integer categoryId) {
+    public List<PlayerAvailableOpportunityDTOOut> getOpportunitiesByCategoryId(Integer categoryId) {
         List<RecruitmentOpportunity> opportunities = recruitmentOpportunityRepository.findRecruitmentOpportunitiesByStatusAndClub_CategoryId("OPEN",categoryId);
         if (opportunities.isEmpty()) {
             throw new ApiException("No opportunities found for this category");
         }
         return opportunities.stream()
-                .map(o -> new PlayerAvailbleOpportunityDTO(
+                .map(o -> new PlayerAvailableOpportunityDTOOut(
                         o.getClub().getName()
                         ,o.getTitle()
                         ,o.getDescription()

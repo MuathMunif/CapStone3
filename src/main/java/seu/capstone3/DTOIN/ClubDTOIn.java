@@ -1,6 +1,5 @@
 package seu.capstone3.DTOIN;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClubDTO {
+public class ClubDTOIn {
 
     @NotEmpty(message = "The CR must be not empty")
     private String cr;

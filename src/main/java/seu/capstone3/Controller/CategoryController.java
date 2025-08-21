@@ -26,15 +26,15 @@ public class CategoryController {
         return ResponseEntity.status(200).body(new ApiResponse("Category added successfully"));
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable Integer id,@Valid @RequestBody Category category){
-        categoryService.updateCategory(id,category);
+    @PutMapping("/update/{category_id}")
+    public ResponseEntity<?> updateCategory(@PathVariable Integer category_id,@Valid @RequestBody Category category){
+        categoryService.updateCategory(category_id,category);
         return ResponseEntity.status(200).body(new ApiResponse("Category updated successfully"));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable Integer id){
-        categoryService.deleteCategory(id);
+    @DeleteMapping("/delete/{category_id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer category_id){
+        categoryService.deleteCategory(category_id);
         return ResponseEntity.status(200).body(new ApiResponse("Category deleted successfully"));
     }
 }

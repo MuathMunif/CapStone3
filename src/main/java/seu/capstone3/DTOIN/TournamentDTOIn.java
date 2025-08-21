@@ -1,6 +1,5 @@
 package seu.capstone3.DTOIN;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +10,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TournamentDTO {
+public class TournamentDTOIn {
 
     @NotEmpty(message = "The name must be not empty")
     private String name;
