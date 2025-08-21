@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.TournamentDTOIn;
+import seu.capstone3.DTOIN.TournamentRescheduleDTOIn;
 import seu.capstone3.DTOOUT.PlayerTournamentDTOOut;
 import seu.capstone3.DTOOUT.TournamentDTOOut;
 import seu.capstone3.Model.*;
@@ -56,7 +57,7 @@ public class TournamentService {
         tournamentRepository.save(tournament);
     }
 
-    //todo to be used TournamentDTO
+
     public void updateTournament(Integer tournamentId, Integer sponsor_id, Tournament tournament) {
         Tournament oldTournament = tournamentRepository.findTournamentById(tournamentId);
         if (oldTournament == null) {
@@ -70,8 +71,6 @@ public class TournamentService {
         oldTournament.setName(tournament.getName());
         oldTournament.setDescription(tournament.getDescription());
         oldTournament.setLocation(tournament.getLocation());
-        oldTournament.setStartDate(tournament.getStartDate());
-        oldTournament.setEndDate(tournament.getEndDate());
         oldTournament.setNumberOfTeams(tournament.getNumberOfTeams());
 
         validatePlayersAndTeams(tournament.getNumberOfPlayers(), tournament.getNumberOfTeams());
@@ -399,5 +398,24 @@ public class TournamentService {
 
         return dtoOutList;
 
+    }
+
+
+    public void rescheduleTournaments(Integer sponsorId, Integer tournamentId , TournamentRescheduleDTOIn tournamentRescheduleDTOIn){
+        Sponsor sponsor = sponsorRepository.findSponsorById(sponsorId);
+        Tournament tournament = tournamentRepository.findTournamentById(tournamentId);
+        if (sponsor == null || tournament == null) {
+            throw new ApiException("Tournament or sponsor not found");
+        }
+        if (!tournament.getSponsor().getId().equals(sponsorId)) {
+            throw new ApiException("Your not allowed to reschedule this tournament");
+        }
+
+        if (tournament.getStatus().equals("CLOSED")) {
+            throw new ApiException("You cannot reschedule closed tournament");
+        }
+        tournament.setStartDate(tournamentRescheduleDTOIn.getStartDate());
+        tournament.setEndDate(tournamentRescheduleDTOIn.getEndDate());
+        tournamentRepository.save(tournament);
     }
 }

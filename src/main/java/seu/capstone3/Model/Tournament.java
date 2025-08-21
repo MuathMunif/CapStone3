@@ -53,8 +53,8 @@ public class Tournament {
     @ManyToOne
     private Category category;
 
-    @NotNull(message = "The number of teams must not be empty")
-    @Positive(message = "The number of teams must be a valid number")
+//    @NotNull(message = "The number of teams must not be empty")
+//    @Positive(message = "The number of teams must be a valid number")
     private Integer numberOfTeams;
 
     @ManyToMany //todo check if the player can joining direct to tournament
@@ -63,7 +63,7 @@ public class Tournament {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tournament")
     private Set<Team> teams;
 
-    @NotEmpty(message = "Status must not be empty")
+//    @NotEmpty(message = "Status must not be empty")
     @Column(columnDefinition = "varchar(20) not null")
     private String status = "OPEN";
 
