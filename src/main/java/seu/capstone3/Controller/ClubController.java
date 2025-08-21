@@ -64,9 +64,9 @@ public class ClubController {
     }
 
     // todo test postman
-    @GetMapping("/get-all-club-by-category_id/{id}")
-    public ResponseEntity<?> getAllClubsByCategoryId(@PathVariable Integer id){
-        return ResponseEntity.status(200).body(clubService.getClubsByCategory(id));
+    @GetMapping("/get-all-club-by-category_id/{player_id}")
+    public ResponseEntity<?> getAllClubsByCategoryId(@PathVariable Integer player_id){
+        return ResponseEntity.status(200).body(clubService.getClubsByCategory(player_id));
     }
 
     @PostMapping("qualified-email/{recruitmentOpportunity_id}/{player_id}/{club_id}")

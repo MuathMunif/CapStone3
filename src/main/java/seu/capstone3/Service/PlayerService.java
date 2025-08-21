@@ -85,6 +85,9 @@ public class PlayerService {
         if (player == null) {
             throw new ApiException("Player not found");
         }
+
+        player.getTournaments().forEach(t -> t.getPlayers().remove(player));
+        player.getTournaments().clear();
         playerRepository.delete(player);
     }
 
