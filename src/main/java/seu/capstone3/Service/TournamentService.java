@@ -347,4 +347,57 @@ public class TournamentService {
         playerRepository.save(player);
         tournamentRepository.save(tournament);
     }
+
+
+    public List<TournamentOutDTO> getTournamentsByCategory(Integer categoryId){
+        Category category = categoryRepository.findCategoryById(categoryId);
+
+        if (category == null) {
+            throw new ApiException("There is no tournaments");
+        }
+
+        List<Tournament> tournaments = tournamentRepository.findAllByCategory(categoryId);
+        List<TournamentOutDTO> dtoOutList = new ArrayList<>();
+
+        for(Tournament t: tournaments){
+            TournamentOutDTO dtoOut = new TournamentOutDTO(
+                    t.getName(),
+                    t.getStartDate(),
+                    t.getEndDate(),
+                    t.getLocation(),
+                    t.getCategory().getName(),
+                    t.getStatus()
+            );
+            dtoOutList.add(dtoOut);
+        }
+        return dtoOutList;
+    }
+
+    public List<TournamentOutDTO> getTournamentsBySponsorId(Integer sponsorId){
+
+        Sponsor sponsor = sponsorRepository.findSponsorById(sponsorId);
+
+        if (sponsor == null) {
+            throw new ApiException("There is no tournaments");
+        }
+
+        List<Tournament> tournaments = tournamentRepository.findTournamentsBySponsorId(sponsorId);
+        List<TournamentOutDTO> dtoOutList = new ArrayList<>();
+
+        for(Tournament t: tournaments){
+            TournamentOutDTO dtoOut = new TournamentOutDTO(
+                    t.getName(),
+                    t.getStartDate(),
+                    t.getEndDate(),
+                    t.getLocation(),
+                    t.getCategory().getName(),
+                    t.getStatus()
+            );
+
+            dtoOutList.add(dtoOut);
+        }
+
+        return dtoOutList;
+
+    }
 }

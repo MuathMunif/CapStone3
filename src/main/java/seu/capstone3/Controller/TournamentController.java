@@ -105,4 +105,14 @@ public class TournamentController {
         tournamentService.withdrawPlayerFromTournament(tournamentId,playerId);
         return ResponseEntity.status(200).body(new ApiResponse("Withdrawal completed successfully"));
     }
+
+    @GetMapping("/get-by-category/{categoryId}")
+    public ResponseEntity<?> getTournamentsByCategory(@PathVariable Integer categoryId){
+        return ResponseEntity.status(200).body(tournamentService.getTournamentsByCategory(categoryId));
+    }
+
+    @GetMapping("/get-by-sponsor/{sponsorId}")
+    public ResponseEntity<?> getTournamentsBySponsorId(@PathVariable Integer sponsorId){
+        return ResponseEntity.status(200).body(tournamentService.getTournamentsBySponsorId(sponsorId));
+    }
 }
