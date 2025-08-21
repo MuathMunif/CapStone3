@@ -57,17 +57,15 @@ public class TournamentService {
     }
 
     //todo to be used TournamentDTO
-    public void updateTournament(Integer tournamentId ,Tournament tournament){
+    public void updateTournament(Integer tournamentId, Integer sponsor_id, Tournament tournament) {
         Tournament oldTournament = tournamentRepository.findTournamentById(tournamentId);
         if (oldTournament == null) {
             throw new ApiException("Tournament not found");
         }
-        if (!Objects.equals(tournament.getSponsor().getId(), oldTournament.getSponsor().getId())) {
-            throw new ApiException("You are not allowed to update a tournament");
+
+        if (!Objects.equals(sponsor_id, oldTournament.getSponsor().getId())) {
+            throw new ApiException("You are not allowed to update this tournament");
         }
-
-        validatePlayersAndTeams(tournament.getNumberOfPlayers(), tournament.getNumberOfTeams());
-
 
         oldTournament.setName(tournament.getName());
         oldTournament.setDescription(tournament.getDescription());
@@ -75,9 +73,9 @@ public class TournamentService {
         oldTournament.setStartDate(tournament.getStartDate());
         oldTournament.setEndDate(tournament.getEndDate());
         oldTournament.setNumberOfTeams(tournament.getNumberOfTeams());
-        oldTournament.setStatus(oldTournament.getStatus());
-        oldTournament.setCategory(oldTournament.getCategory());
-        oldTournament.setSponsor(oldTournament.getSponsor());
+
+        validatePlayersAndTeams(tournament.getNumberOfPlayers(), tournament.getNumberOfTeams());
+
         tournamentRepository.save(oldTournament);
     }
 
