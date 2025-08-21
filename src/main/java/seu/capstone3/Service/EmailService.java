@@ -54,11 +54,9 @@ public class EmailService {
     }
 
     public void sendTournamentWelcome(Tournament tournament, Player player){
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setFrom("alimuaffag@gmail.com");
-        msg.setTo(player.getEmail());
-        msg.setSubject("Welcome to " + tournament.getName() + " Tournament!");
-
+        mailMessage.setFrom("alimuaffag@gmail.com");
+        mailMessage.setTo(player.getEmail());
+        mailMessage.setSubject("Welcome to " + tournament.getName() + " Tournament!");
         String emailBody = "Dear " + player.getName() + ",\n\n"
                 + "Welcome to the " + tournament.getName() + " tournament!\n\n"
                 + "Tournament Details:\n"
@@ -70,8 +68,8 @@ public class EmailService {
                 + "Best regards,\n"
                 + tournament.getName() + " Management Team";
 
-        msg.setText(emailBody);
-        mailSender.send(msg);
+        mailMessage.setText(emailBody);
+        mailSender.send(mailMessage);
     }
 
     public void qualifiedEmail(RecruitmentOpportunity recruitmentOpportunity, Player player,Club club) {

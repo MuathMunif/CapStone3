@@ -65,8 +65,8 @@ public class ClubService {
         }
         oldClub.setName(club.getName());
         oldClub.setEmail(club.getEmail());
-        oldClub.setPhoneNumber(oldClub.getPhoneNumber());
-        oldClub.setLocation(oldClub.getLocation());
+        oldClub.setPhoneNumber(club.getPhoneNumber());
+        oldClub.setLocation(club.getLocation());
         oldClub.setCategory(category);
         clubRepository.save(oldClub);
     }
