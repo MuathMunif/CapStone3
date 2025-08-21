@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
 import seu.capstone3.DTOIN.TournamentDTOIn;
+import seu.capstone3.DTOIN.TournamentRescheduleDTOIn;
 import seu.capstone3.Model.Team;
 import seu.capstone3.Model.Tournament;
 import seu.capstone3.Service.TournamentService;
@@ -110,5 +111,12 @@ public class TournamentController {
     @GetMapping("/get-by-sponsor/{sponsorId}")
     public ResponseEntity<?> getTournamentsBySponsorId(@PathVariable Integer sponsorId){
         return ResponseEntity.status(200).body(tournamentService.getTournamentsBySponsorId(sponsorId));
+    }
+
+    //todo check postman
+    @PutMapping("/reschedule-tournaments/{sponsor_id}/{tournamentId}")
+    public ResponseEntity<?> rescheduleTournament(@PathVariable Integer sponsor_id, @PathVariable Integer tournamentId , @Valid @RequestBody TournamentRescheduleDTOIn tournamentRescheduleDTOIn){
+        tournamentService.rescheduleTournaments(sponsor_id,tournamentId,tournamentRescheduleDTOIn);
+        return ResponseEntity.status(200).body(new ApiResponse("Tournament rescheduled successfully"));
     }
 }
