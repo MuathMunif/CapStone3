@@ -57,13 +57,13 @@ public class ClubController {
         return ResponseEntity.status(200).body(clubService.getAllClubsDto());
     }
 
-    // todo test postman
+
     @GetMapping("/get-all-club-by-location/{location}")
     public ResponseEntity<?> getAllClubsByLocation(@PathVariable String location){
         return ResponseEntity.status(200).body(clubService.getClubsByLocation(location));
     }
 
-    // todo test postman
+
     @GetMapping("/get-all-club-by-category_id/{player_id}")
     public ResponseEntity<?> getAllClubsByCategoryId(@PathVariable Integer player_id){
         return ResponseEntity.status(200).body(clubService.getClubsByCategory(player_id));
