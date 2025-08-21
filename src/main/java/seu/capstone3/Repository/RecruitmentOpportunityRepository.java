@@ -15,5 +15,7 @@ public interface RecruitmentOpportunityRepository extends JpaRepository<Recruitm
 
     RecruitmentOpportunity findRecruitmentOpportunitiesByIdAndClub_Id(Integer id, Integer clubId);
 
+    List<RecruitmentOpportunity> findRecruitmentOpportunitiesByClub_CategoryId(Integer categoryId);
+
 
 }
