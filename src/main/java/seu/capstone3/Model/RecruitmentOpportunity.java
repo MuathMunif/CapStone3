@@ -23,7 +23,7 @@ public class RecruitmentOpportunity {
     private Integer id;
 
     @NotEmpty(message = "The title must be not empty")
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(50) not null")
     private String title;
 
     @NotEmpty(message = "The description must be not empty")
@@ -39,5 +39,5 @@ public class RecruitmentOpportunity {
     @OneToMany(cascade = CascadeType.ALL , mappedBy = "recruitmentOpportunity")
     private Set<RequestJoining> requestJoinings;
 
-    //todo check if complete or not
+
 }

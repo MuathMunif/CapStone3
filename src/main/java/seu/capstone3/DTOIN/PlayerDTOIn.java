@@ -16,6 +16,7 @@ public class PlayerDTOIn {
     @NotEmpty(message = "The name must be not empty")
     private String name;
 
+    @NotEmpty(message = "Email must not be empty")
     @Email(message = "The email must be a valid email")
     private String email;
 

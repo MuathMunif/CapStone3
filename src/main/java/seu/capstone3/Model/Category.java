@@ -22,7 +22,7 @@ public class Category {
     private Integer id;
 
     @NotEmpty(message = "The name must be not empty")
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(50) not null unique")
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL , mappedBy = "category")
@@ -36,5 +36,4 @@ public class Category {
     @OneToMany(cascade = CascadeType.ALL , mappedBy = "category")
     @JsonIgnore
     private Set<Club> clubs;
-
 }

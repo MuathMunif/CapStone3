@@ -3,6 +3,7 @@ package seu.capstone3.DTOIN;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class ClubDTOIn {
     private String cr;
 
     @NotEmpty(message = "The name must be not empty")
+    @Size(min = 4, max = 120, message = "Name must be between 4 and 120 characters")
     private String name;
 
     @Email(message = "The email must be valid email")

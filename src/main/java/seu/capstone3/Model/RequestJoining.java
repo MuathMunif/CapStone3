@@ -33,7 +33,4 @@ public class RequestJoining {
     @JsonIgnore
     private RecruitmentOpportunity recruitmentOpportunity;
 
-
-
-
 }
