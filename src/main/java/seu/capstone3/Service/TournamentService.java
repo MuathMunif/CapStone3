@@ -3,9 +3,9 @@ package seu.capstone3.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
-import seu.capstone3.DTOIN.TournamentDTO;
-import seu.capstone3.DTOOUT.PlayerTournamentOutDTO;
-import seu.capstone3.DTOOUT.TournamentOutDTO;
+import seu.capstone3.DTOIN.TournamentDTOIn;
+import seu.capstone3.DTOOUT.PlayerTournamentDTOOut;
+import seu.capstone3.DTOOUT.TournamentDTOOut;
 import seu.capstone3.Model.*;
 import seu.capstone3.Repository.*;
 
@@ -29,25 +29,25 @@ public class TournamentService {
     }
 
 
-    public void addTournament(TournamentDTO tournamentDTO){
+    public void addTournament(TournamentDTOIn tournamentDTOIn){
 
-        Sponsor sponsor = sponsorRepository.findSponsorById(tournamentDTO.getSponsor_id());
-        Category category = categoryRepository.findCategoryById(tournamentDTO.getCategory_id());
+        Sponsor sponsor = sponsorRepository.findSponsorById(tournamentDTOIn.getSponsor_id());
+        Category category = categoryRepository.findCategoryById(tournamentDTOIn.getCategory_id());
         if(sponsor == null || category == null){
             throw new ApiException("Sponsor not found or Category not found");
         }
 
-        validatePlayersAndTeams(tournamentDTO.getNumberOfPlayers(),tournamentDTO.getNumberOfTeams());
+        validatePlayersAndTeams(tournamentDTOIn.getNumberOfPlayers(), tournamentDTOIn.getNumberOfTeams());
 
 
-        Tournament tournament = new Tournament(null ,tournamentDTO.getName(),
-                tournamentDTO.getDescription(),
-                tournamentDTO.getNumberOfPlayers(),
-                tournamentDTO.getStartDate(),
-                tournamentDTO.getEndDate(),
-                tournamentDTO.getLocation(),
+        Tournament tournament = new Tournament(null , tournamentDTOIn.getName(),
+                tournamentDTOIn.getDescription(),
+                tournamentDTOIn.getNumberOfPlayers(),
+                tournamentDTOIn.getStartDate(),
+                tournamentDTOIn.getEndDate(),
+                tournamentDTOIn.getLocation(),
                 sponsor,category,
-                tournamentDTO.getNumberOfTeams(),
+                tournamentDTOIn.getNumberOfTeams(),
                 null,
                 null,
                 "OPEN",
@@ -93,22 +93,22 @@ public class TournamentService {
     // EX
 
 
-    public List<TournamentOutDTO> getAllTournamentsOutDTO(){
+    public List<TournamentDTOOut> getAllTournamentsOutDTO(){
         List<Tournament> tournaments = tournamentRepository.findAll();
-        List<TournamentOutDTO> tournamentOutDTOS = new ArrayList<>();
+        List<TournamentDTOOut> tournamentDTOOuts = new ArrayList<>();
 
         for(Tournament t: tournaments){
-            TournamentOutDTO tournamentOutDTO = new TournamentOutDTO();
-            tournamentOutDTO.setName(t.getName());
-            tournamentOutDTO.setStartDate(t.getStartDate());
-            tournamentOutDTO.setEndDate(t.getEndDate());
-            tournamentOutDTO.setLocation(t.getLocation());
-            tournamentOutDTO.setCategoryName(t.getCategory().getName());
-            tournamentOutDTO.setStatus(t.getStatus());
+            TournamentDTOOut tournamentDTOOut = new TournamentDTOOut();
+            tournamentDTOOut.setName(t.getName());
+            tournamentDTOOut.setStartDate(t.getStartDate());
+            tournamentDTOOut.setEndDate(t.getEndDate());
+            tournamentDTOOut.setLocation(t.getLocation());
+            tournamentDTOOut.setCategoryName(t.getCategory().getName());
+            tournamentDTOOut.setStatus(t.getStatus());
 
-            tournamentOutDTOS.add(tournamentOutDTO);
+            tournamentDTOOuts.add(tournamentDTOOut);
         }
-        return tournamentOutDTOS;
+        return tournamentDTOOuts;
     }
 
 
@@ -250,17 +250,17 @@ public class TournamentService {
     }
 
 
- public List<PlayerTournamentOutDTO> getPlayerTournament(String email){
+ public List<PlayerTournamentDTOOut> getPlayerTournament(String email){
         Player player = playerRepository.findPlayerByEmail(email);
 
      if (player == null) {
          throw new ApiException("Player not found");
      }
 
-     List<PlayerTournamentOutDTO> result = new ArrayList<>();
+     List<PlayerTournamentDTOOut> result = new ArrayList<>();
 
      for(Tournament t: player.getTournaments()){
-         PlayerTournamentOutDTO tournamentOutDTO = new PlayerTournamentOutDTO(
+         PlayerTournamentDTOOut tournamentOutDTO = new PlayerTournamentDTOOut(
                  t.getName(),t.getStartDate().toString(),t.getEndDate().toString(),
                  t.getSponsor().getName()
          );
@@ -270,13 +270,13 @@ public class TournamentService {
      return result;
  }
 
- public List<TournamentOutDTO> getOpenTournaments(){
+ public List<TournamentDTOOut> getOpenTournaments(){
 
      List<Tournament> openTournaments = tournamentRepository.findOpenTournaments();
-     List<TournamentOutDTO> dtoList = new ArrayList<>();
+     List<TournamentDTOOut> dtoList = new ArrayList<>();
 
     for(Tournament t: openTournaments){
-        TournamentOutDTO dto = new TournamentOutDTO();
+        TournamentDTOOut dto = new TournamentDTOOut();
         dto.setName(t.getName());
         dto.setStartDate(t.getStartDate());
         dto.setEndDate(t.getEndDate());
@@ -349,7 +349,7 @@ public class TournamentService {
     }
 
 
-    public List<TournamentOutDTO> getTournamentsByCategory(Integer categoryId){
+    public List<TournamentDTOOut> getTournamentsByCategory(Integer categoryId){
         Category category = categoryRepository.findCategoryById(categoryId);
 
         if (category == null) {
@@ -357,10 +357,10 @@ public class TournamentService {
         }
 
         List<Tournament> tournaments = tournamentRepository.findAllByCategory(categoryId);
-        List<TournamentOutDTO> dtoOutList = new ArrayList<>();
+        List<TournamentDTOOut> dtoOutList = new ArrayList<>();
 
         for(Tournament t: tournaments){
-            TournamentOutDTO dtoOut = new TournamentOutDTO(
+            TournamentDTOOut dtoOut = new TournamentDTOOut(
                     t.getName(),
                     t.getStartDate(),
                     t.getEndDate(),
@@ -373,7 +373,7 @@ public class TournamentService {
         return dtoOutList;
     }
 
-    public List<TournamentOutDTO> getTournamentsBySponsorId(Integer sponsorId){
+    public List<TournamentDTOOut> getTournamentsBySponsorId(Integer sponsorId){
 
         Sponsor sponsor = sponsorRepository.findSponsorById(sponsorId);
 
@@ -382,10 +382,10 @@ public class TournamentService {
         }
 
         List<Tournament> tournaments = tournamentRepository.findTournamentsBySponsorId(sponsorId);
-        List<TournamentOutDTO> dtoOutList = new ArrayList<>();
+        List<TournamentDTOOut> dtoOutList = new ArrayList<>();
 
         for(Tournament t: tournaments){
-            TournamentOutDTO dtoOut = new TournamentOutDTO(
+            TournamentDTOOut dtoOut = new TournamentDTOOut(
                     t.getName(),
                     t.getStartDate(),
                     t.getEndDate(),

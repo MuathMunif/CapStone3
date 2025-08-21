@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequestJoiningDTO {
+public class RecruitmentOpportunityDTOIn {
 
-    private Integer player_id;
+    private String title;
+    private String description;
+    private Integer club_id;
 
-    private Integer recruitment_opportunity_id;
 }

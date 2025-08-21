@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlayerSWAnalysisDTO {
+public class PlayerSWAnalysisDTOOut {
     private Integer playerId;
     private String playerName;
     private List<String> strengths;

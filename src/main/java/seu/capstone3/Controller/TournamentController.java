@@ -1,13 +1,11 @@
 package seu.capstone3.Controller;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
-import seu.capstone3.DTOIN.TournamentDTO;
+import seu.capstone3.DTOIN.TournamentDTOIn;
 import seu.capstone3.Model.Team;
 import seu.capstone3.Model.Tournament;
 import seu.capstone3.Service.TournamentService;
@@ -26,8 +24,8 @@ public class TournamentController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addTournament(@Valid @RequestBody TournamentDTO tournamentDTO){
-        tournamentService.addTournament(tournamentDTO);
+    public ResponseEntity<?> addTournament(@Valid @RequestBody TournamentDTOIn tournamentDTOIn){
+        tournamentService.addTournament(tournamentDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Tournament added successfully"));
     }
 

@@ -28,15 +28,15 @@ public class SponsorController {
     }
 
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateSponsor(@PathVariable Integer id , @Valid @RequestBody Sponsor sponsor) {
-        sponsorService.updateSponsor(id, sponsor);
+    @PutMapping("/update/{sponsor_id}")
+    public ResponseEntity<?> updateSponsor(@PathVariable Integer sponsor_id , @Valid @RequestBody Sponsor sponsor) {
+        sponsorService.updateSponsor(sponsor_id, sponsor);
         return ResponseEntity.status(200).body(new ApiResponse("Sponsor updated successfully"));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteSponsor(@PathVariable Integer id) {
-        sponsorService.deleteSponsor(id);
+    @DeleteMapping("/delete/{sponsor_id}")
+    public ResponseEntity<?> deleteSponsor(@PathVariable Integer sponsor_id) {
+        sponsorService.deleteSponsor(sponsor_id);
         return ResponseEntity.status(200).body(new ApiResponse("Sponsor deleted successfully"));
     }
 }

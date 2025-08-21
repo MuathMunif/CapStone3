@@ -1,6 +1,5 @@
 package seu.capstone3.DTOIN;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlayerDTO {
+public class PlayerDTOIn {
 
     @NotEmpty(message = "The name must be not empty")
     private String name;

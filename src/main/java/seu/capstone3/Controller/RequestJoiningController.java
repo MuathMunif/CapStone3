@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
-import seu.capstone3.DTOIN.RequestJoiningDTO;
+import seu.capstone3.DTOIN.RequestJoiningDTOIn;
 import seu.capstone3.Service.RequestJoiningService;
 
 @RestController
@@ -20,8 +20,8 @@ public class RequestJoiningController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<?> addRequest(@RequestBody RequestJoiningDTO requestJoiningDTO) {
-        requestJoiningService.addRequestJoining(requestJoiningDTO);
+    public ResponseEntity<?> addRequest(@RequestBody RequestJoiningDTOIn requestJoiningDTOIn) {
+        requestJoiningService.addRequestJoining(requestJoiningDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Request joined successfully"));
     }
 

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import seu.capstone3.Api.ApiResponse;
-import seu.capstone3.DTOIN.RecruitmentOpportunityDTO;
+import seu.capstone3.DTOIN.RecruitmentOpportunityDTOIn;
 import seu.capstone3.Model.RecruitmentOpportunity;
 import seu.capstone3.Service.RecruitmentOpportunityService;
 
@@ -23,22 +23,22 @@ public class RecruitmentOpportunityController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<?> addRecruitmentOpportunity( @Valid @RequestBody RecruitmentOpportunityDTO recruitmentOpportunityDTO) {
-        recruitmentOpportunityService.addRecruitmentOpportunity(recruitmentOpportunityDTO);
+    public ResponseEntity<?> addRecruitmentOpportunity( @Valid @RequestBody RecruitmentOpportunityDTOIn recruitmentOpportunityDTOIn) {
+        recruitmentOpportunityService.addRecruitmentOpportunity(recruitmentOpportunityDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Successfully added recruitment opportunity"));
     }
 
 
-    @PutMapping("update/{id}")
-    public ResponseEntity<?> updateRecruitmentOpportunity(@PathVariable Integer id , @Valid @RequestBody RecruitmentOpportunity recruitmentOpportunity) {
-        recruitmentOpportunityService.updateRecruitmentOpportunity(id, recruitmentOpportunity);
+    @PutMapping("update/{recruitmentOpportunity_id}")
+    public ResponseEntity<?> updateRecruitmentOpportunity(@PathVariable Integer recruitmentOpportunity_id , @Valid @RequestBody RecruitmentOpportunity recruitmentOpportunity) {
+        recruitmentOpportunityService.updateRecruitmentOpportunity(recruitmentOpportunity_id, recruitmentOpportunity);
         return ResponseEntity.status(200).body(new ApiResponse("Successfully updated"));
     }
 
 
-    @DeleteMapping("/delete/{club_id}/{id}")
-    public ResponseEntity<?> deleteRecruitmentOpportunity(@PathVariable Integer club_id , @PathVariable Integer id) {
-        recruitmentOpportunityService.deleteRecruitmentOpportunity(club_id, id);
+    @DeleteMapping("/delete/{club_id}/{recruitmentOpportunity_id}")
+    public ResponseEntity<?> deleteRecruitmentOpportunity(@PathVariable Integer club_id , @PathVariable Integer recruitmentOpportunity_id) {
+        recruitmentOpportunityService.deleteRecruitmentOpportunity(club_id, recruitmentOpportunity_id);
         return ResponseEntity.status(200).body(new ApiResponse("Successfully deleted"));
     }
 
@@ -63,9 +63,9 @@ public class RecruitmentOpportunityController {
         return ResponseEntity.status(200).body(new ApiResponse("Recruitment opportunity closed"));
     }
 
-    @PostMapping("/ai-recommendations/{opportunityId}")
-    public ResponseEntity<?> recommend(@PathVariable Integer opportunityId) {
-        return ResponseEntity.ok(recruitmentOpportunityService.getAiRecommendations(opportunityId));
+    @PostMapping("/ai-recommendations/{opportunity_id}")
+    public ResponseEntity<?> recommend(@PathVariable Integer opportunity_id) {
+        return ResponseEntity.ok(recruitmentOpportunityService.getAiRecommendations(opportunity_id));
     }
 
 
@@ -75,9 +75,9 @@ public class RecruitmentOpportunityController {
     }
 
 
-    @GetMapping("/get-all-by-club-id/{id}")
-    public ResponseEntity<?> getAllRecruitmentOpportunitiesByClubId(@PathVariable Integer id) {
-        return ResponseEntity.status(200).body(recruitmentOpportunityService.getOpportunitiesByClubId(id));
+    @GetMapping("/get-all-by-club-id/{club_id}")
+    public ResponseEntity<?> getAllRecruitmentOpportunitiesByClubId(@PathVariable Integer club_id) {
+        return ResponseEntity.status(200).body(recruitmentOpportunityService.getOpportunitiesByClubId(club_id));
     }
 
 

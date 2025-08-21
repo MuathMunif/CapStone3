@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrainingPlanSimpleDTO {
+public class TrainingPlanSimpleDTOOut {
     private Integer playerId;
     private String playerName;
     private String sport;
