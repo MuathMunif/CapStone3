@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import seu.capstone3.Api.ApiException;
 import seu.capstone3.DTOIN.RequestJoiningDTO;
+import seu.capstone3.DTOOUT.RequestJoiningOUTDTO;
 import seu.capstone3.Model.Club;
 import seu.capstone3.Model.Player;
 import seu.capstone3.Model.RecruitmentOpportunity;
@@ -13,6 +14,7 @@ import seu.capstone3.Repository.PlayerRepository;
 import seu.capstone3.Repository.RecruitmentOpportunityRepository;
 import seu.capstone3.Repository.RequestJoiningRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,6 +48,23 @@ public class RequestJoiningService {
         //todo check if player already has club ?
         RequestJoining requestJoining = new RequestJoining(null, "Pending", player, recruitmentOpportunity);
         requestJoiningRepository.save(requestJoining);
+    }
+
+    public List<RequestJoiningOUTDTO> playerApplayedRequestJoining(Integer player_id){
+        Player player = playerRepository.findPlayerById(player_id);
+        if(player == null){
+            throw new ApiException("Player not found");
+        }
+        List<RequestJoining> requestJoinings =
+                requestJoiningRepository.findAllRequestJoiningByPlayer_Id(player_id);
+
+        return requestJoinings.stream()
+                .map(r -> new RequestJoiningOUTDTO(
+                        r.getId(),
+                        r.getPlayer().getName(),
+                        r.getStatus()
+                ))
+                .toList();
     }
 
 }
