@@ -45,20 +45,24 @@ public class ClubService {
         clubRepository.save(club);
     }
 
-    public void updateClub(Integer id, Club club) {
+    public void updateClub(Integer id, ClubDTOIn clubDTOIn) {
         Club oldClub = clubRepository.findClubById(id);
-        Category category = categoryRepository.findCategoryById(club.getCategory().getId());
         if (oldClub == null) {
             throw new ApiException("Club not found");
         }
+
+        Category category = categoryRepository.findCategoryById(clubDTOIn.getCategory_id());
         if (category == null) {
             throw new ApiException("Category not found");
         }
-        oldClub.setName(club.getName());
-        oldClub.setEmail(club.getEmail());
-        oldClub.setPhoneNumber(club.getPhoneNumber());
-        oldClub.setLocation(club.getLocation());
+
+        oldClub.setCr(clubDTOIn.getCr());
+        oldClub.setName(clubDTOIn.getName());
+        oldClub.setEmail(clubDTOIn.getEmail());
+        oldClub.setPhoneNumber(clubDTOIn.getPhoneNumber());
+        oldClub.setLocation(clubDTOIn.getLocation());
         oldClub.setCategory(category);
+
         clubRepository.save(oldClub);
     }
 

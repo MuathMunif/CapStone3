@@ -30,8 +30,8 @@ public class RecruitmentOpportunityController {
 
 
     @PutMapping("update/{recruitmentOpportunity_id}")
-    public ResponseEntity<?> updateRecruitmentOpportunity(@PathVariable Integer recruitmentOpportunity_id , @Valid @RequestBody RecruitmentOpportunity recruitmentOpportunity) {
-        recruitmentOpportunityService.updateRecruitmentOpportunity(recruitmentOpportunity_id, recruitmentOpportunity);
+    public ResponseEntity<?> updateRecruitmentOpportunity(@PathVariable Integer recruitmentOpportunity_id , @Valid @RequestBody RecruitmentOpportunityDTOIn recruitmentOpportunityDTOIn) {
+        recruitmentOpportunityService.updateRecruitmentOpportunity(recruitmentOpportunity_id, recruitmentOpportunityDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Successfully updated"));
     }
 

@@ -58,25 +58,45 @@ public class TournamentService {
     }
 
 
-    public void updateTournament(Integer tournamentId, Integer sponsor_id, Tournament tournament) {
-        Tournament oldTournament = tournamentRepository.findTournamentById(tournamentId);
-        if (oldTournament == null) {
+    public void updateTournament(Integer tournamentId, TournamentDTOIn tournamentDTOIn) {
+        Tournament existing = tournamentRepository.findTournamentById(tournamentId);
+        if (existing == null) {
             throw new ApiException("Tournament not found");
         }
 
-        if (!Objects.equals(sponsor_id, oldTournament.getSponsor().getId())) {
+        if (!Objects.equals(tournamentDTOIn.getSponsor_id(), existing.getSponsor().getId())) {
             throw new ApiException("You are not allowed to update this tournament");
         }
 
-        oldTournament.setName(tournament.getName());
-        oldTournament.setDescription(tournament.getDescription());
-        oldTournament.setLocation(tournament.getLocation());
-        oldTournament.setNumberOfTeams(tournament.getNumberOfTeams());
+        Category category = categoryRepository.findCategoryById(tournamentDTOIn.getCategory_id());
+        if (category == null) {
+            throw new ApiException("Category not found");
+        }
 
-        validatePlayersAndTeams(tournament.getNumberOfPlayers(), tournament.getNumberOfTeams());
+        existing.setName(tournamentDTOIn.getName());
+        existing.setDescription(tournamentDTOIn.getDescription());
+        existing.setLocation(tournamentDTOIn.getLocation());
+        existing.setNumberOfPlayers(tournamentDTOIn.getNumberOfPlayers());
+        existing.setNumberOfTeams(tournamentDTOIn.getNumberOfTeams());
+        existing.setCategory(category);
 
-        tournamentRepository.save(oldTournament);
+        if (tournamentDTOIn.getStartDate() != null) {
+            existing.setStartDate(tournamentDTOIn.getStartDate());
+        }
+        if (tournamentDTOIn.getEndDate() != null) {
+            existing.setEndDate(tournamentDTOIn.getEndDate());
+        }
+
+        if (existing.getStartDate() != null && existing.getEndDate() != null
+                && !existing.getEndDate().isAfter(existing.getStartDate())) {
+            throw new ApiException("End date must be after start date");
+        }
+
+
+        validatePlayersAndTeams(tournamentDTOIn.getNumberOfPlayers(), tournamentDTOIn.getNumberOfTeams());
+        tournamentRepository.save(existing);
     }
+
 
     public void deleteTournament(Integer sponsorId ,Integer tournamentId){
         Tournament tournament = tournamentRepository.findTournamentById(tournamentId);

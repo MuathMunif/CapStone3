@@ -30,11 +30,10 @@ public class TournamentController {
         return ResponseEntity.status(200).body(new ApiResponse("Tournament added successfully"));
     }
 
-    @PutMapping("/update/{tournament_id}/{sponsor_id}")
-    public ResponseEntity<?> updateTournament(@PathVariable Integer sponsor_id,
-                                              @PathVariable Integer tournament_id,
-                                              @Valid @RequestBody Tournament tournament){
-        tournamentService.updateTournament(tournament_id,sponsor_id,tournament);
+    @PutMapping("/update/{tournament_id}")
+    public ResponseEntity<?> updateTournament(@PathVariable Integer tournament_id,
+                                              @Valid @RequestBody TournamentDTOIn tournamentDTOIn){
+        tournamentService.updateTournament(tournament_id,tournamentDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Tournament updated successfully"));
     }
 

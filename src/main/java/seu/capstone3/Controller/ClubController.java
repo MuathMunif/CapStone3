@@ -27,8 +27,8 @@ public class ClubController {
     }
 
     @PutMapping("/update/{club_id}")
-    public ResponseEntity<?> updateClub(@PathVariable Integer club_id,@Valid @RequestBody Club club) {
-        clubService.updateClub(club_id, club);
+    public ResponseEntity<?> updateClub(@PathVariable Integer club_id,@Valid @RequestBody ClubDTOIn clubDTOIn) {
+        clubService.updateClub(club_id, clubDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Club updated successfully"));
     }
 
