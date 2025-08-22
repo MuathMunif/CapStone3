@@ -44,13 +44,13 @@ public class PlayerController {
     //Ex
 
     @PostMapping("/upload-cv/{player_id}")
-    public ResponseEntity<String> uploadCv(@PathVariable Integer player_id, @RequestParam("cv") MultipartFile file) {
+    public ResponseEntity<?> uploadCv(@PathVariable Integer player_id, @RequestParam("cv") MultipartFile file) {
         try {
             playerService.uploadCv(player_id, file);
-            return ResponseEntity.status(200).body("CV uploaded successfully");
+            return ResponseEntity.status(200).body(new ApiResponse("CV uploaded successfully"));
         }
         catch (Exception e) {
-            return ResponseEntity.status(500).body(e.getMessage());
+            return ResponseEntity.status(400).body(new ApiResponse(e.getMessage()));
         }
     }
 

@@ -8,7 +8,7 @@ import seu.capstone3.Api.ApiResponse;
 import seu.capstone3.Model.Sponsor;
 import seu.capstone3.Service.SponsorService;
 
-import java.util.ResourceBundle;
+
 
 @RestController
 @RequestMapping("/api/v1/sponsor")
