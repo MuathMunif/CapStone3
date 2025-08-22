@@ -22,7 +22,7 @@ public class ControllerAdvice {
     @ExceptionHandler(value = ApiException.class)
     public ResponseEntity<?> ApiException(ApiException e){
         String message=e.getMessage();
-        return ResponseEntity.status(400).body(message);
+        return ResponseEntity.status(400).body(new ApiResponse(message));
     }
 
     // Server Validation Exception

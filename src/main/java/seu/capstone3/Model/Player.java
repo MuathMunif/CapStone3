@@ -29,11 +29,11 @@ public class Player {
     private String name;
 
     @Email(message = "The email must be a valid email")
-    @Column(columnDefinition = "varchar(30) not null")
+    @Column(columnDefinition = "varchar(50) not null unique")
     private String email;
 
     @NotEmpty(message = "The phoneNumber must be not empty")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10) not null unique")
     private String phoneNumber;
 
     @NotNull(message = "The age must be not empty")
@@ -42,7 +42,7 @@ public class Player {
     private Integer age;
 
     @NotEmpty(message = "The location must be not empty")
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(50) not null")
     private String location;
 
     @NotNull(message = "The height must be not empty")

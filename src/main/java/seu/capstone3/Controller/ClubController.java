@@ -39,7 +39,6 @@ public class ClubController {
     }
 
     //Ex
-
     @GetMapping("/get-club-by-id/{club_id}")
     public ResponseEntity<?> getClubById(@PathVariable Integer club_id) {
         return ResponseEntity.status(200).body(clubService.getClubById(club_id));

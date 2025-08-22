@@ -113,7 +113,7 @@ public class TournamentController {
         return ResponseEntity.status(200).body(tournamentService.getTournamentsBySponsorId(sponsorId));
     }
 
-    //todo check postman
+
     @PutMapping("/reschedule-tournaments/{sponsor_id}/{tournamentId}")
     public ResponseEntity<?> rescheduleTournament(@PathVariable Integer sponsor_id, @PathVariable Integer tournamentId , @Valid @RequestBody TournamentRescheduleDTOIn tournamentRescheduleDTOIn){
         tournamentService.rescheduleTournaments(sponsor_id,tournamentId,tournamentRescheduleDTOIn);

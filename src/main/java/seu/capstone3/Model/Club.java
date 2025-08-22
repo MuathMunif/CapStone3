@@ -27,20 +27,19 @@ public class Club {
     private String cr;
 
     @NotEmpty(message = "The name must be not empty")
-    @Column(columnDefinition = "varchar(10) not null")
-    //todo increase the name later
+    @Column(columnDefinition = "varchar(50) not null")
     private String name;
 
     @Email(message = "The email must be valid email")
-    @Column(columnDefinition = "varchar(30) not null")
+    @Column(columnDefinition = "varchar(50) not null unique")
     private String email;
 
     @NotEmpty(message = "The phoneNumber must be not empty")
-    @Column(columnDefinition = "varchar(10) not null")
+    @Column(columnDefinition = "varchar(10) not null unique")
     private String phoneNumber;
 
     @NotEmpty(message = "The location must be not empty")
-    @Column(columnDefinition = "varchar(20) not null")
+    @Column(columnDefinition = "varchar(50) not null")
     private String location;
 
     @OneToMany(cascade = CascadeType.ALL , mappedBy = "club")
