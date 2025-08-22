@@ -60,23 +60,31 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    public void updatePlayer(Integer id ,Player player) {
-        Player player1 = playerRepository.findPlayerById(id);
-        if (player1 == null) {
+    public void updatePlayer(Integer id, PlayerDTOIn playerDTOIn) {
+        Player existing = playerRepository.findPlayerById(id);
+        if (existing == null) {
             throw new ApiException("Player not found");
         }
-        player1.setName(player.getName());
-        player1.setAge(player.getAge());
-        player1.setEmail(player.getEmail());
-        player1.setPhoneNumber(player.getPhoneNumber());
-        player1.setLocation(player.getLocation());
-        player1.setHeight(player.getHeight());
-        player1.setWeight(player.getWeight());
-        player1.setDescription(player.getDescription());
-        player1.setSkills(player.getSkills());
-        player1.setCategory(player.getCategory());
-        playerRepository.save(player1);
+
+        Category category = categoryRepository.findCategoryById(playerDTOIn.getCategory_id());
+        if (category == null) {
+            throw new ApiException("Category not found");
+        }
+
+        existing.setName(playerDTOIn.getName());
+        existing.setAge(playerDTOIn.getAge());
+        existing.setEmail(playerDTOIn.getEmail());
+        existing.setPhoneNumber(playerDTOIn.getPhoneNumber());
+        existing.setLocation(playerDTOIn.getLocation());
+        existing.setHeight(playerDTOIn.getHeight());
+        existing.setWeight(playerDTOIn.getWeight());
+        existing.setDescription(playerDTOIn.getDescription());
+        existing.setSkills(playerDTOIn.getSkills());
+        existing.setCategory(category);
+
+        playerRepository.save(existing);
     }
+
 
 
     public void deletePlayer(Integer id) {

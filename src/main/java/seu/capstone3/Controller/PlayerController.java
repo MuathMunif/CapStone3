@@ -30,8 +30,8 @@ public class PlayerController {
 
 
     @PutMapping("/update/{player_id}")
-    public ResponseEntity<?> updatePlayer(@PathVariable Integer player_id, @Valid @RequestBody Player player) {
-        playerService.updatePlayer(player_id, player);
+    public ResponseEntity<?> updatePlayer(@PathVariable Integer player_id, @Valid @RequestBody PlayerDTOIn playerDTOIn) {
+        playerService.updatePlayer(player_id, playerDTOIn);
         return ResponseEntity.status(200).body(new ApiResponse("Player updated successfully"));
     }
 

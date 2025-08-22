@@ -36,17 +36,6 @@ public class RecruitmentOpportunityService {
         return recruitmentOpportunityRepository.findAll();
     }
 
-
-//    //todo create DTO
-//    public void addRecruitmentOpportunity (Integer club_id , RecruitmentOpportunity recruitmentOpportunity) {
-//        Club club = clubRepository.findClubById(club_id);
-//        if (club == null) {
-//            throw new ApiException("Club not found");
-//        }
-//        recruitmentOpportunity.setClub(club);
-//        recruitmentOpportunityRepository.save(recruitmentOpportunity);
-//    }
-
     public void addRecruitmentOpportunity(RecruitmentOpportunityDTOIn recruitmentOpportunityDTOIn) {
         Club club = clubRepository.findClubById(recruitmentOpportunityDTOIn.getClub_id());
         if (club == null) {
@@ -58,16 +47,20 @@ public class RecruitmentOpportunityService {
     }
 
 
-    public void updateRecruitmentOpportunity(Integer id, RecruitmentOpportunity recruitmentOpportunity) {
-        RecruitmentOpportunity oldRecruitmentOpportunity1 = recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(id);
-        if (oldRecruitmentOpportunity1 == null) {
+    public void updateRecruitmentOpportunity(Integer id, RecruitmentOpportunityDTOIn recruitmentOpportunityDTOIn) {
+        RecruitmentOpportunity existing = recruitmentOpportunityRepository.findRecruitmentOpportunitiesById(id);
+        if (existing == null) {
             throw new ApiException("Recruitment Opportunity not found");
         }
-        if (!Objects.equals(oldRecruitmentOpportunity1.getClub().getId(), recruitmentOpportunity.getClub().getId())) {
+
+        if (!Objects.equals(existing.getClub().getId(), recruitmentOpportunityDTOIn.getClub_id())) {
             throw new ApiException("You are not allowed to update this recruitment opportunity");
         }
-        oldRecruitmentOpportunity1.setDescription(recruitmentOpportunity.getDescription());
-        recruitmentOpportunityRepository.save(oldRecruitmentOpportunity1);
+
+        existing.setTitle(recruitmentOpportunityDTOIn.getTitle());
+        existing.setDescription(recruitmentOpportunityDTOIn.getDescription());
+
+        recruitmentOpportunityRepository.save(existing);
     }
 
 
